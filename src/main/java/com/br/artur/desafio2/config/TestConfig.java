@@ -1,4 +1,4 @@
-package com.br.artur.desafio2.configuration;
+package com.br.artur.desafio2.config;
 
 import com.br.artur.desafio2.entity.Product;
 import com.br.artur.desafio2.repository.ProductRepository;
@@ -13,7 +13,7 @@ import java.time.Instant;
 import java.util.Arrays;
 
 @Configuration
-@Profile("test")
+@Profile("local")
 public class TestConfig implements CommandLineRunner {
 
     @Autowired
@@ -21,13 +21,13 @@ public class TestConfig implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Product p1 = new Product(null, null,"FOOD",
-                "2022/1","Fruta","Vermelha","n/a","Maçã", null,
-                null,null,null,null, Instant.parse("2019-06-20T19:53:07Z"),
+        Product p1 = new Product(null, RandomStringUtils.randomAlphanumeric(8).toLowerCase(),"FOOD",
+                "1/2022","Fruta","Vermelha","n/a","Maçã", BigDecimal.valueOf(10),
+                BigDecimal.valueOf(10),BigDecimal.valueOf(11),150,123456789012L, Instant.parse("2019-06-20T19:53:07Z"),
                 Instant.parse("2019-06-20T19:53:07Z"));
-        Product p2 = new Product(null, null,"FOOD",
-                "2022/1","Fruta","Amarela","n/a","Banana", null,
-                null, null,null,null, Instant.parse("2019-06-20T19:53:07Z"),
+        Product p2 = new Product(null, RandomStringUtils.randomAlphanumeric(8).toLowerCase(),"FOOD",
+                "1/2022","Fruta","Amarela","n/a","Banana", BigDecimal.valueOf(10),
+                BigDecimal.valueOf(10),BigDecimal.valueOf(11),150,123456789013L, Instant.parse("2019-06-20T19:53:07Z"),
                 Instant.parse("2019-06-20T19:53:07Z"));
 
         productRepository.saveAll(Arrays.asList(p1, p2));
