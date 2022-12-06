@@ -51,6 +51,12 @@ public class ProductResource {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<Product> update(@PathVariable Long id, @RequestBody Product pdct){
+        pdct = service.update(id, pdct);
+        return ResponseEntity.ok().body(pdct);
+    }
+
     public List<ResponseEntity<Product>> insertByCsv(String path) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");

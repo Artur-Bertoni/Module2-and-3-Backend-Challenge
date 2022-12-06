@@ -37,6 +37,27 @@ public class ProductService {
         }
     }
 
+    public Product update(Long id, Product obj){
+        Product productEntity = repository.getById(id);
+        updateData(productEntity, obj);
+        return repository.save(productEntity);
+    }
+
+    private void updateData(Product productEntity, Product obj) {
+        productEntity.setCategory(obj.getCategory());
+        productEntity.setDescription(obj.getDescription());
+        productEntity.setColor(obj.getColor());
+        productEntity.setExpirationDate(obj.getExpirationDate());
+        productEntity.setName(obj.getName());
+        productEntity.setMaterial(obj.getMaterial());
+        productEntity.setPrice(obj.getPrice());
+        productEntity.setSeries(obj.getSeries());
+        productEntity.setGrossAmount(obj.getGrossAmount());
+        productEntity.setManufacturingDate(obj.getManufacturingDate());
+        productEntity.setTaxes(obj.getTaxes());
+        productEntity.setQuantity(obj.getQuantity());
+    }
+
     public List<Product> insertByCsv(List<Product> productList){
         return repository.saveAll(productList);
     }
