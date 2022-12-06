@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,9 +39,13 @@ public class ProductService {
     }
 
     public Product update(Long id, Product obj){
-        Product productEntity = repository.getById(id);
-        updateData(productEntity, obj);
-        return repository.save(productEntity);
+        try{
+            Product productEntity = repository.getById(id);
+            updateData(productEntity, obj);
+            return repository.save(productEntity);
+        } catch (EntityNotFoundException e){
+            throw new ResourceNotFoundException(id);
+        }
     }
 
     private void updateData(Product productEntity, Product obj) {
