@@ -1,10 +1,19 @@
 #PostgreSql
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/product-api
-    username: adminUser
-    password: admin
-
+    url: jdbc:postgresql://localhost:5432/desafio2
+    username: postgres
+    password: 12022004abs
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+        format_sql: true
+    hibernate:
+      ddl_auto: update
+    show-sql: true
   flyway:
     url: ${spring.datasource.url}
     user: ${spring.datasource.username}
