@@ -1,0 +1,24 @@
+version: '3.1'
+
+services:
+  db_products_api:
+    container_name: db_products_api
+    image: postgres
+    restart: always
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_DB: product-api
+      POSTGRES_USER: aminUser
+      POSTGRES_PASSWORD: admin
+
+  products_api:
+    image: productImage
+    restart: always
+    ports:
+      - 8080:8080
+    environment:
+      URL_POSTGRES: db_products_api
+      URL_POSTGRES_PORT: 5432
+    depends_on:
+      - db_products_api
