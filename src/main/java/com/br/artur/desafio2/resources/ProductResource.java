@@ -38,11 +38,11 @@ public class ProductResource {
     }
 
     @PostMapping
-    public ResponseEntity<Product> insert(@RequestBody Product pdct) {
-        pdct = service.insert(pdct);
+    public ResponseEntity<Product> insert(@RequestBody Product p) {
+        p = service.insert(p);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(pdct.getId()).toUri();
-        return ResponseEntity.created(uri).body(pdct);
+                .buildAndExpand(p.getId()).toUri();
+        return ResponseEntity.created(uri).body(p);
     }
 
     @DeleteMapping(value = "/{id}")
@@ -52,97 +52,23 @@ public class ProductResource {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Product> update(@PathVariable Long id, @RequestBody Product pdct){
-        pdct = service.update(id, pdct);
-        return ResponseEntity.ok().body(pdct);
+    public ResponseEntity<Product> update(@PathVariable Long id, @RequestBody Product p){
+        p = service.update(id, p);
+        return ResponseEntity.ok().body(p);
     }
 
+    @PostMapping
     public List<ResponseEntity<Product>> insertByCsv(String path) {
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-            CSVReader csvReader = new CSVReader(new FileReader(path));
+       List<Product> productList = service.insertByCsv(path);
 
-            List<ResponseEntity<Product>> insertsList = new ArrayList<>();
-            List<Map<String, String>> lines = new ArrayList<>();
+       List<ResponseEntity<Product>> responseEntityList = null;
+       for (Product p : productList){
+           URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                   .buildAndExpand(p.getId()).toUri();
 
-            String[] headers = csvReader.readNext(),
-                    columns;
+           responseEntityList.add(ResponseEntity.created(uri).body(p));
+       }
 
-            for (int i = 0; i < headers.length; i++) {
-                headers[i] = headers[i].toLowerCase();
-            }
-
-            while (true) {
-                try {
-                    if ((columns = csvReader.readNext()) == null) break;
-                } catch (IOException | CsvValidationException e) {
-                    throw new RuntimeException(e);
-                }
-                Map<String, String> campos = new HashMap<>();
-
-                for (int i = 0; i < columns.length; i++) {
-                    campos.put(headers[i], columns[i]);
-                }
-
-                lines.add(campos);
-            }
-
-            lines.forEach(cols -> {
-                String code = cols.get("código");
-                Long barCode = cols.get("codigo de barras").equals("null") ? null : Long.parseLong(cols.get("codigo de barras"));
-                String series = cols.get("série");
-                String name = cols.get("nome");
-                String description = cols.get("descrição");
-                String category = cols.get("categoria");
-                BigDecimal taxes = cols.get("impostos (%)").equals("null") ? null : new BigDecimal(cols.get("impostos (%)").replace(',', '.'));
-                BigDecimal grossAmount = cols.get("valor bruto").equals("null") ? null : new BigDecimal(cols.get("valor bruto").replace(',', '.'));
-                BigDecimal price = null;
-                if (taxes != null && grossAmount != null) {
-                    price = grossAmount.add((taxes.divide(BigDecimal.valueOf(100))).multiply(grossAmount));
-                    price = price.add(price.multiply(BigDecimal.valueOf(0.45)));
-                }
-                Date manufacturingDate = null, expirationDate = null;
-                Integer quantity = (cols.get("quantidade") == null || cols.get("quantidade").equals("null")) ? null : Integer.parseInt(cols.get("quantidade"));
-
-                try {
-                    if (!cols.get("data de fabricação").equals("n/a") && !cols.get("data de fabricação").equals("") && !cols.get("data de fabricação").equals("null")) {
-                        manufacturingDate = sdf.parse(cols.get("data de fabricação"));
-                    }
-                    if (!cols.get("data de validade").equals("n/a") && !cols.get("data de validade").equals("") && !cols.get("data de validade").equals("null")) {
-                        expirationDate = sdf.parse(cols.get("data de validade"));
-                    }
-                } catch (ParseException e) {
-                    throw new ProductServiceException(e.getMessage());
-                }
-
-                String color = cols.get("cor");
-                String material = cols.get("material");
-
-                Product product = new Product();
-
-                product.setCode(code);
-                product.setBarCode(barCode);
-                product.setSeries(series);
-                product.setName(name);
-                product.setDescription(description);
-                product.setCategory(category);
-                product.setGrossAmount(grossAmount);
-                product.setTaxes(taxes);
-                product.setPrice(price);
-                assert manufacturingDate != null;
-                product.setManufacturingDate(manufacturingDate.toInstant());
-                assert expirationDate != null;
-                product.setExpirationDate(expirationDate.toInstant());
-                product.setColor(color);
-                product.setMaterial(material);
-                product.setQuantity(quantity);
-
-                insertsList.add(insert(product));
-            });
-
-            return insertsList;
-        } catch (Exception e) {
-            throw new ProductServiceException(e.getMessage());
-        }
+       return responseEntityList;
     }
 }

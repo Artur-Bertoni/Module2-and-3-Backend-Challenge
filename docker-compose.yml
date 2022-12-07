@@ -6,11 +6,11 @@ services:
     image: postgres
     restart: always
     ports:
-      - 5433:5432
+      - 5432:5432
     environment:
       POSTGRES_DB: product-api
-      POSTGRES_USER: aminUser
-      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12022004abs
 
   products_api:
     image: productImage

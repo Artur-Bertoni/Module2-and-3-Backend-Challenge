@@ -11,7 +11,7 @@
 	<groupId>com.br.artur</groupId>
 	<artifactId>desafio2</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>desafio2</name>
+	<name>desafioBackendModulo2</name>
 	<description>Desafio modulo 2</description>
 	<properties>
 		<java.version>11</java.version>
