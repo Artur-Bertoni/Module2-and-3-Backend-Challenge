@@ -8,6 +8,8 @@ import com.opencsv.exceptions.CsvValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.FileReader;
@@ -45,6 +47,36 @@ public class ProductResource {
         return ResponseEntity.created(uri).body(p);
     }
 
+    @PostMapping(value = "/upload")
+    public List<ResponseEntity<Product>> insertByCsv(@RequestParam String path) {
+        List<Product> productList = service.insertByCsv(path);
+
+        List<ResponseEntity<Product>> responseEntityList = null;
+        for (Product p : productList){
+            URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                    .buildAndExpand(p.getId()).toUri();
+
+            responseEntityList.add(ResponseEntity.created(uri).body(p));
+        }
+
+        return responseEntityList;
+    }
+/*
+    @PostMapping(value = "/{path}")
+    public String insertByCsv(@RequestParam MultipartFile file, RedirectAttributes redirectAttributes, String folderPath) {
+        return service.insertByCsv(file, redirectAttributes, folderPath);
+
+        List<ResponseEntity<Product>> responseEntityList = null;
+        for (Product p : productList){
+            URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                    .buildAndExpand(p.getId()).toUri();
+
+            responseEntityList.add(ResponseEntity.created(uri).body(p));
+        }
+
+        return responseEntityList;
+    }*/
+
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
@@ -55,20 +87,5 @@ public class ProductResource {
     public ResponseEntity<Product> update(@PathVariable Long id, @RequestBody Product p){
         p = service.update(id, p);
         return ResponseEntity.ok().body(p);
-    }
-
-    @PostMapping
-    public List<ResponseEntity<Product>> insertByCsv(String path) {
-       List<Product> productList = service.insertByCsv(path);
-
-       List<ResponseEntity<Product>> responseEntityList = null;
-       for (Product p : productList){
-           URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                   .buildAndExpand(p.getId()).toUri();
-
-           responseEntityList.add(ResponseEntity.created(uri).body(p));
-       }
-
-       return responseEntityList;
     }
 }
