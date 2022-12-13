@@ -1,24 +1,18 @@
 package com.br.artur.desafio2.resources;
 
 import com.br.artur.desafio2.entity.Product;
-import com.br.artur.desafio2.service.exceptions.ProductServiceException;
+import com.br.artur.desafio2.helper.CsvHelper;
 import com.br.artur.desafio2.service.ProductService;
-import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvValidationException;
+import com.br.artur.desafio2.service.exceptions.ProductServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.URI;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/products")
@@ -47,35 +41,20 @@ public class ProductResource {
         return ResponseEntity.created(uri).body(p);
     }
 
-    @PostMapping(value = "/upload")
-    public List<ResponseEntity<Product>> insertByCsv(@RequestParam String path) {
-        List<Product> productList = service.insertByCsv(path);
+    @PostMapping("/upload")
+    public ResponseEntity<List<Product>> insertByCsv(@RequestParam("file") MultipartFile file) {
+        if (CsvHelper.isCsv(file)) {
+            try {
+                List<Product> pl = service.insertByCsv(file);
 
-        List<ResponseEntity<Product>> responseEntityList = null;
-        for (Product p : productList){
-            URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                    .buildAndExpand(p.getId()).toUri();
-
-            responseEntityList.add(ResponseEntity.created(uri).body(p));
+                return ResponseEntity.status(HttpStatus.CREATED).body(pl);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new ProductServiceException("Não foi possível importar o arquivo: "+e.getMessage());
+            }
         }
-
-        return responseEntityList;
+        throw new ProductServiceException("Por favor, insira um arquivo válido");
     }
-/*
-    @PostMapping(value = "/{path}")
-    public String insertByCsv(@RequestParam MultipartFile file, RedirectAttributes redirectAttributes, String folderPath) {
-        return service.insertByCsv(file, redirectAttributes, folderPath);
-
-        List<ResponseEntity<Product>> responseEntityList = null;
-        for (Product p : productList){
-            URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                    .buildAndExpand(p.getId()).toUri();
-
-            responseEntityList.add(ResponseEntity.created(uri).body(p));
-        }
-
-        return responseEntityList;
-    }*/
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {

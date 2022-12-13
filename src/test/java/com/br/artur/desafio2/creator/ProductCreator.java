@@ -6,11 +6,10 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.temporal.ChronoField;
 
 public class ProductCreator {
 
-    private RequestDTO createRequest(){
+    public static RequestDTO createRequest(){
         return RequestDTO.builder()
                 .barCode(123456789L)
                 .color("Vermelha")
@@ -42,7 +41,7 @@ public class ProductCreator {
                 .expirationDate(Instant.now())
                 .grossAmount(new BigDecimal(faker.commerce().price().replace(",", ".")))
                 .taxes(new BigDecimal(faker.number().randomDigitNotZero()))
-                .series(faker.number().randomDigitNotZero()+"/"+Instant.now().get(ChronoField.YEAR))
+                .series(faker.number().randomDigitNotZero()+"/2022")
                 .material(faker.commerce().material())
                 .quantity(faker.number().randomDigitNotZero())
                 .manufacturingDate(Instant.now())
@@ -50,11 +49,11 @@ public class ProductCreator {
                 .build();
     }
 
-    private RequestDTO updateRequest(){
+    public static RequestDTO updateRequest(){
         return RequestDTO.builder()
                 .barCode(987654321L)
                 .color("Azul")
-                .code(RandomStringUtils.randomAlphanumeric(8).toLowerCase())
+                .code("qkbt5mva")
                 .description("Mesa grande")
                 .name("Mesa")
                 .price(new BigDecimal(1))

@@ -37,7 +37,7 @@ public class ProductResourceTest {
 
     @Test
     void findAllShouldReturnResponseEntityWhenSuccessV2() throws Exception{
-        var result = mockMvc.perform(MockMvcRequestBuilders.get(URL)
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get(URL)
                 .contentType(MediaType.APPLICATION_JSON));
 
         result.andDo(MockMvcResultHandlers.print());
@@ -48,7 +48,7 @@ public class ProductResourceTest {
 
     @Test
     void findByIdShouldReturnResponseEntityWhenSuccess() throws Exception{
-        var result = mockMvc.perform(MockMvcRequestBuilders.get(URL.concat("/{id}"),1)
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get(URL.concat("/{id}"),1)
                 .contentType(MediaType.APPLICATION_JSON));
 
         result.andDo(MockMvcResultHandlers.print());
@@ -80,36 +80,61 @@ public class ProductResourceTest {
         result.andExpect(MockMvcResultMatchers.jsonPath("$.price").value(request.getPrice()));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.quantity").value(request.getQuantity()));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.barCode").value(request.getBarCode()));
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.manufacturingDate").value(request.getManufacturingDate()));
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.expirationDate").value(request.getExpirationDate()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.manufacturingDate").value(request.getManufacturingDate().toString()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.expirationDate").value(request.getExpirationDate().toString()));
     }
 
     @Test
     void insertShouldReturnResponseEntityWhenSuccessFaker() throws Exception{
-        var request = ProductCreator.createRequest();
-        var jsonBody = objectMapper.writeValueAsString(request);
-        var result = mockMvc.perform(MockMvcRequestBuilders.post(URL)
+        RequestDTO request = ProductCreator.createFakerRequest();
+        String jsonBody = objectMapper.writeValueAsString(request);
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post(URL)
                 .content(jsonBody)
                 .contentType(MediaType.APPLICATION_JSON));
 
         result.andDo(MockMvcResultHandlers.print());
         result.andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.category").exists());
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.category").value(request.get...().toString())); //TODO para tdos (menos 'toString')
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.id").exists());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.code").value(request.getCode()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.category").value(request.getCategory()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.series").value(request.getSeries()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.description").value(request.getDescription()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.color").value(request.getColor()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.material").value(request.getMaterial()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(request.getName()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.grossAmount").value(request.getGrossAmount()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.taxes").value(request.getTaxes()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.price").value(request.getPrice()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.quantity").value(request.getQuantity()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.barCode").value(request.getBarCode()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.manufacturingDate").value(request.getManufacturingDate().toString()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.expirationDate").value(request.getExpirationDate().toString()));
     }
 
     @Test
     void updateShouldReturnResponseEntityWhenSuccess() throws Exception{
-        var request = ProductCreator.updateRequest();
-        var jsonBody = objectMapper.writeValueAsString(request);
-        var result = mockMvc.perform(MockMvcRequestBuilders.put(URL.concat("/{id}"),1)
+        RequestDTO request = ProductCreator.updateRequest();
+        String jsonBody = objectMapper.writeValueAsString(request);
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.put(URL.concat("/{id}"),2)
                 .content(jsonBody)
                 .contentType(MediaType.APPLICATION_JSON));
 
         result.andDo(MockMvcResultHandlers.print());
         result.andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.category").exists());
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.category").value(request.get...().toString())); //TODO para tdos os updates (menos 'toString')
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.id").exists());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.code").value(request.getCode()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.category").value(request.getCategory()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.series").value(request.getSeries()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.description").value(request.getDescription()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.color").value(request.getColor()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.material").value(request.getMaterial()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(request.getName()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.grossAmount").value(request.getGrossAmount()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.taxes").value(request.getTaxes()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.price").value(request.getPrice()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.quantity").value(request.getQuantity()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.barCode").value(request.getBarCode()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.manufacturingDate").value(request.getManufacturingDate()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.expirationDate").value(request.getExpirationDate()));
     }
-
 }

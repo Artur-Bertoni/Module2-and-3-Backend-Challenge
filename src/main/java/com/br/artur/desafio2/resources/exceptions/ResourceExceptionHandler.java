@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -21,11 +22,16 @@ public class ResourceExceptionHandler {
         StandartError err = new StandartError(Instant.now(), status.value(), error, e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
-/*
+
     @ExceptionHandler(MultipartException.class)
     public String handleError1(MultipartException e, RedirectAttributes redirectAttributes) {
 
         redirectAttributes.addFlashAttribute("message", e.getCause().getMessage());
         return "redirect:/uploadStatus";
-    }*/
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity handleMaxSizeException(MaxUploadSizeExceededException exc) {
+        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(exc);
+    }
 }
