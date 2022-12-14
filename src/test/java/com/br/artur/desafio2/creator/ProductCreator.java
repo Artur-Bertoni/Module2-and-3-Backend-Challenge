@@ -28,7 +28,7 @@ public class ProductCreator {
                 .build();
     }
 
-    public static RequestDto createFakerRequest() {
+    public static RequestDto fakerRequest() {
         Faker faker = new Faker();
 
         return RequestDto.builder()
@@ -46,23 +46,6 @@ public class ProductCreator {
                 .quantity(faker.number().randomDigitNotZero())
                 .manufacturingDate(Instant.now())
                 .category(faker.commerce().department())
-                .build();
-    }
-
-    public static RequestDto updateRequest(){
-        return RequestDto.builder()
-                .color("Azul")
-                .description("Mesa grande")
-                .name("Mesa")
-                .price(new BigDecimal(1))
-                .expirationDate(Instant.now())
-                .grossAmount(new BigDecimal(2))
-                .taxes(new BigDecimal(3))
-                .series("2/2022")
-                .material("madeira")
-                .quantity(20)
-                .manufacturingDate(Instant.now())
-                .category("Móveis")
                 .build();
     }
 }

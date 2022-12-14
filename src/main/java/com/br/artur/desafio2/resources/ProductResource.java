@@ -6,6 +6,7 @@ import com.br.artur.desafio2.helper.CsvHelper;
 import com.br.artur.desafio2.service.ProductService;
 import com.br.artur.desafio2.service.exceptions.ProductServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,18 +34,19 @@ public class ProductResource {
 
     @PostMapping
     @ResponseBody
+    @ResponseStatus(code = HttpStatus.CREATED)
     public ProductDto insert(@RequestBody RequestDto request) {
         return service.insert(request);
     }
 
     @PostMapping("/upload")
     @ResponseBody
+    @ResponseStatus(code = HttpStatus.CREATED)
     public List<ProductDto> insertByCsv(@RequestParam("file") MultipartFile file) {
         if (CsvHelper.isCsv(file)) {
             try {
                 return service.insertByCsv(file);
             } catch (Exception e) {
-                e.printStackTrace();
                 throw new ProductServiceException("Não foi possível importar o arquivo: "+e.getMessage());
             }
         }
@@ -53,6 +55,7 @@ public class ProductResource {
 
     @DeleteMapping(value = "/{id}")
     @ResponseBody
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }

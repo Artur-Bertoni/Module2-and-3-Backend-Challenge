@@ -27,8 +27,8 @@ public class ProductServiceTest {
     private ProductRepository repository;
 
     @Test
-    void insertShouldReturnProductDtoWhenSuccess() throws Exception{
-        RequestDto request = ProductCreator.createFakerRequest();
+    void insertTest() {
+        RequestDto request = ProductCreator.fakerRequest();
         Product productSave = ProductConvert.toEntity(request);
 
         Mockito.when(repository.save(productSave)).thenReturn(productSave);
@@ -39,8 +39,8 @@ public class ProductServiceTest {
     }
 
     @Test
-    void findAllShouldReturnProductDtoListWhenSuccess() throws Exception{
-        RequestDto request = ProductCreator.createFakerRequest();
+    void findAllTest() {
+        RequestDto request = ProductCreator.fakerRequest();
         Product productSave = ProductConvert.toEntity(request);
 
         Mockito.when(repository.findAll()).thenReturn(List.of(productSave));
@@ -51,8 +51,8 @@ public class ProductServiceTest {
     }
 
     @Test
-    void findByIdShouldReturnProductDtoWhenSuccess() throws Exception{
-        RequestDto request = ProductCreator.createFakerRequest();
+    void findByIdTest() {
+        RequestDto request = ProductCreator.fakerRequest();
         Product productSave = ProductConvert.toEntity(request).withId(1L);
 
         Mockito.when(repository.findById(1L)).thenReturn(Optional.of(productSave));
@@ -63,8 +63,8 @@ public class ProductServiceTest {
     }
 
     @Test
-    void deleteIdShouldReturnVoidWhenSuccess() throws Exception{
-        RequestDto request = ProductCreator.createFakerRequest();
+    void deleteTest() {
+        RequestDto request = ProductCreator.fakerRequest();
         Product productSave = ProductConvert.toEntity(request).withId(1L);
 
         Mockito.when(repository.findById(1L)).thenReturn(Optional.of(productSave));
@@ -73,5 +73,21 @@ public class ProductServiceTest {
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(response.getCode(), request.getCode());
+    }
+
+    @Test
+    void updateTest() {
+        RequestDto request = ProductCreator.fakerRequest();
+        Product productSave = ProductConvert.toEntity(request).withId(1L);
+
+        Mockito.when(repository.findById(1L)).thenReturn(Optional.of(productSave));
+        Mockito.when(repository.save(productSave)).thenReturn(productSave);
+
+        ProductDto response = service.update(1L, request);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(response.getCode(), request.getCode());
+        Assertions.assertEquals(response.getName(), request.getName());
+        Assertions.assertEquals(response.getDescription(), request.getDescription());
     }
 }

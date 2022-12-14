@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,8 +33,8 @@ public class ProductService {
         return repository.findById(id).map(ProductConvert::toDto).orElse(ProductDto.builder().build());
     }
 
-    public ProductDto insert(RequestDto obj){
-        return ProductConvert.toDto(repository.save(ProductConvert.toEntity(obj)));
+    public ProductDto insert(RequestDto request){
+        return ProductConvert.toDto(repository.save(ProductConvert.toEntity(request)));
     }
 
     public List<ProductDto> insertByCsv(MultipartFile file) {
@@ -42,6 +43,8 @@ public class ProductService {
             return ProductConvert.toDtoList(repository.saveAll(products));
         } catch (IOException e) {
             throw new ProductServiceException("Erro ao armazenar os dados do arquivo: "+e.getMessage());
+        } catch (NullPointerException e){
+            throw new ProductServiceException("Null pointer");
         }
     }
 
@@ -53,28 +56,34 @@ public class ProductService {
         }
     }
 
-    public ProductDto update(Long id, RequestDto obj){
+    public ProductDto update(Long id, RequestDto request){
         try{
-            Product productEntity = repository.getById(id);
-            updateData(productEntity, ProductConvert.toEntity(obj));
-            return ProductConvert.toDto(repository.save(productEntity.withId(id)));
+            Optional<Product> opt = repository.findById(id);
+
+            if (!opt.isPresent()) {
+                throw new EntityNotFoundException("Produto não encontrado");
+            }
+            Product productEntity = opt.get();
+
+            updateData(productEntity, ProductConvert.toEntity(request));
+            return ProductConvert.toDto(repository.save(productEntity));
         } catch (EntityNotFoundException e){
             throw new ResourceNotFoundException(id);
         }
     }
 
-    private void updateData(Product productEntity, Product obj) {
-        productEntity.setCategory(obj.getCategory());
-        productEntity.setDescription(obj.getDescription());
-        productEntity.setColor(obj.getColor());
-        productEntity.setExpirationDate(obj.getExpirationDate());
-        productEntity.setName(obj.getName());
-        productEntity.setMaterial(obj.getMaterial());
-        productEntity.setPrice(obj.getPrice());
-        productEntity.setSeries(obj.getSeries());
-        productEntity.setGrossAmount(obj.getGrossAmount());
-        productEntity.setManufacturingDate(obj.getManufacturingDate());
-        productEntity.setTaxes(obj.getTaxes());
-        productEntity.setQuantity(obj.getQuantity());
+    private void updateData(Product productEntity, Product product) {
+        productEntity.setCategory(product.getCategory());
+        productEntity.setDescription(product.getDescription());
+        productEntity.setColor(product.getColor());
+        productEntity.setExpirationDate(product.getExpirationDate());
+        productEntity.setName(product.getName());
+        productEntity.setMaterial(product.getMaterial());
+        productEntity.setPrice(product.getPrice());
+        productEntity.setSeries(product.getSeries());
+        productEntity.setGrossAmount(product.getGrossAmount());
+        productEntity.setManufacturingDate(product.getManufacturingDate());
+        productEntity.setTaxes(product.getTaxes());
+        productEntity.setQuantity(product.getQuantity());
     }
 }

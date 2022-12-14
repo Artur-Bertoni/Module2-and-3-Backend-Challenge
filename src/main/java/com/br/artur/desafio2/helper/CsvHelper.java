@@ -79,10 +79,7 @@ public class CsvHelper {
             return products;
         } catch (IOException e) {
             throw new ProductServiceException("Erro ao ler o arquivo CSV: "+e.getMessage());
-        } catch (ParseException e) {
-            throw new ProductServiceException(e.getMessage());
-        } catch (NullPointerException e){
-            e.printStackTrace();
+        } catch (ParseException | NullPointerException e) {
             throw new ProductServiceException(e.getMessage());
         }
     }

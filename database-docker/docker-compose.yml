@@ -4,17 +4,15 @@ services:
 
   products_api:
     container_name: products_api
-    image: arturbertoni/product_image:v1
+    image: product_image:v1
     restart: always
     ports:
       - "8080:8080"
     environment:
-      URL_POSTGRES: http://db_products_api/:5432/desafio2
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 12022004abs
-      SPRING_PROFILES_ACTIVE: dev
-    profiles:
-      - dev
+      - URL_POSTGRES=jdbc:postgresql://db_products_api:5432/desafio2
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=12022004abs
+      - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       - db_products_api
 
@@ -25,6 +23,6 @@ services:
     ports:
       - "5433:5432"
     environment:
-      POSTGRES_DB: desafio2
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 12022004abs
+      - POSTGRES_DB=desafio2
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=12022004abs
