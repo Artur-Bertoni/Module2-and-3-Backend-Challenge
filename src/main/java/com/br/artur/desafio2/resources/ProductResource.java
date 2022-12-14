@@ -1,53 +1,48 @@
 package com.br.artur.desafio2.resources;
 
-import com.br.artur.desafio2.entity.Product;
+import com.br.artur.desafio2.dto.ProductDto;
+import com.br.artur.desafio2.dto.RequestDto;
 import com.br.artur.desafio2.helper.CsvHelper;
 import com.br.artur.desafio2.service.ProductService;
 import com.br.artur.desafio2.service.exceptions.ProductServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/products")
+@RequestMapping(value = "/products", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProductResource {
 
     @Autowired
     private ProductService service;
 
     @GetMapping
-    public ResponseEntity<List<Product>> findAll(){
-        List<Product> productList = service.findAll();
-        return ResponseEntity.ok().body(productList);
+    @ResponseBody
+    public List<ProductDto> findAll(){
+        return service.findAll();
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Product> findById(@PathVariable Long id){
-        Product p = service.findById(id);
-        return ResponseEntity.ok().body(p);
+    @ResponseBody
+    public ProductDto findById(@PathVariable Long id){
+        return service.findById(id);
     }
 
     @PostMapping
-    public ResponseEntity<Product> insert(@RequestBody Product p) {
-        p = service.insert(p);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(p.getId()).toUri();
-        return ResponseEntity.created(uri).body(p);
+    @ResponseBody
+    public ProductDto insert(@RequestBody RequestDto request) {
+        return service.insert(request);
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<List<Product>> insertByCsv(@RequestParam("file") MultipartFile file) {
+    @ResponseBody
+    public List<ProductDto> insertByCsv(@RequestParam("file") MultipartFile file) {
         if (CsvHelper.isCsv(file)) {
             try {
-                List<Product> pl = service.insertByCsv(file);
-
-                return ResponseEntity.status(HttpStatus.CREATED).body(pl);
+                return service.insertByCsv(file);
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new ProductServiceException("Não foi possível importar o arquivo: "+e.getMessage());
@@ -57,14 +52,14 @@ public class ProductResource {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    @ResponseBody
+    public void delete(@PathVariable Long id) {
         service.delete(id);
-        return ResponseEntity.noContent().build();
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Product> update(@PathVariable Long id, @RequestBody Product p){
-        p = service.update(id, p);
-        return ResponseEntity.ok().body(p);
+    @ResponseBody
+    public ProductDto update(@PathVariable Long id, @RequestBody RequestDto request){
+        return service.update(id, request);
     }
 }

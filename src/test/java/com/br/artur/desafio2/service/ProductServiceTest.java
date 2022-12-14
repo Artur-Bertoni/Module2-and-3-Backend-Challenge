@@ -2,7 +2,8 @@ package com.br.artur.desafio2.service;
 
 import com.br.artur.desafio2.convert.ProductConvert;
 import com.br.artur.desafio2.creator.ProductCreator;
-import com.br.artur.desafio2.dto.RequestDTO;
+import com.br.artur.desafio2.dto.ProductDto;
+import com.br.artur.desafio2.dto.RequestDto;
 import com.br.artur.desafio2.entity.Product;
 import com.br.artur.desafio2.repository.ProductRepository;
 import org.junit.jupiter.api.Assertions;
@@ -26,49 +27,49 @@ public class ProductServiceTest {
     private ProductRepository repository;
 
     @Test
-    void insertShouldReturnResponseEntityWhenSuccess() throws Exception{
-        RequestDTO request = ProductCreator.createFakerRequest();
+    void insertShouldReturnProductDtoWhenSuccess() throws Exception{
+        RequestDto request = ProductCreator.createFakerRequest();
         Product productSave = ProductConvert.toEntity(request);
 
         Mockito.when(repository.save(productSave)).thenReturn(productSave);
-        Product response = service.insert(ProductConvert.toEntity(request));
+        ProductDto response = service.insert(request);
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(response.getCode(), request.getCode());
     }
 
     @Test
-    void findAllShouldReturnResponseEntityWhenSuccess() throws Exception{
-        RequestDTO request = ProductCreator.createFakerRequest();
+    void findAllShouldReturnProductDtoListWhenSuccess() throws Exception{
+        RequestDto request = ProductCreator.createFakerRequest();
         Product productSave = ProductConvert.toEntity(request);
 
         Mockito.when(repository.findAll()).thenReturn(List.of(productSave));
-        List<Product> response = service.findAll();
+        List<ProductDto> response = service.findAll();
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(response.get(0).getCode(), request.getCode());
     }
 
     @Test
-    void findByIdShouldReturnResponseEntityWhenSuccess() throws Exception{
-        RequestDTO request = ProductCreator.createFakerRequest();
+    void findByIdShouldReturnProductDtoWhenSuccess() throws Exception{
+        RequestDto request = ProductCreator.createFakerRequest();
         Product productSave = ProductConvert.toEntity(request).withId(1L);
 
         Mockito.when(repository.findById(1L)).thenReturn(Optional.of(productSave));
-        Product response = service.findById(1L);
+        ProductDto response = service.findById(1L);
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(response.getCode(), request.getCode());
     }
 
     @Test
-    void deleteIdShouldReturnResponseEntityWhenSuccess() throws Exception{
-        RequestDTO request = ProductCreator.createFakerRequest();
+    void deleteIdShouldReturnVoidWhenSuccess() throws Exception{
+        RequestDto request = ProductCreator.createFakerRequest();
         Product productSave = ProductConvert.toEntity(request).withId(1L);
 
         Mockito.when(repository.findById(1L)).thenReturn(Optional.of(productSave));
         Mockito.doNothing().when(repository).deleteById(1L);
-        Product response = service.findById(1L);
+        ProductDto response = service.findById(1L);
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(response.getCode(), request.getCode());

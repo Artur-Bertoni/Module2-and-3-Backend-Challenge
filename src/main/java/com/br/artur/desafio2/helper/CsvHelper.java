@@ -15,7 +15,6 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,7 +22,6 @@ import java.util.List;
 public class CsvHelper {
 
     public static String TYPE = "text/csv";
-    static String[] headers = {"código","codigo de barras","série","nome","descrição","categoria","valor bruto","impostos (%)","data de fabricação","data de validade","cor","material"};
 
     public static boolean isCsv(MultipartFile file) {
         return TYPE.equals(file.getContentType());
@@ -34,7 +32,7 @@ public class CsvHelper {
              CSVParser csvParser = new CSVParser(fileReader,
                      CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim());) {
 
-            List<Product> products = new ArrayList<Product>();
+            List<Product> products = new ArrayList<>();
 
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
 

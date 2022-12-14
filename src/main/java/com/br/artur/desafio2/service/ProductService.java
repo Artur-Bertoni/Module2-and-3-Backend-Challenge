@@ -1,5 +1,8 @@
 package com.br.artur.desafio2.service;
 
+import com.br.artur.desafio2.convert.ProductConvert;
+import com.br.artur.desafio2.dto.ProductDto;
+import com.br.artur.desafio2.dto.RequestDto;
 import com.br.artur.desafio2.entity.Product;
 import com.br.artur.desafio2.helper.CsvHelper;
 import com.br.artur.desafio2.repository.ProductRepository;
@@ -13,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -21,23 +24,22 @@ public class ProductService {
     @Autowired
     private ProductRepository repository;
 
-    public List<Product> findAll(){
-        return repository.findAll();
+    public List<ProductDto> findAll(){
+        return repository.findAll().stream().map(ProductConvert::toDto).collect(Collectors.toList());
     }
 
-    public Product findById(Long id){
-        Optional<Product> obj = repository.findById(id);
-        return obj.orElseThrow(() -> new ResourceNotFoundException(id));
+    public ProductDto findById(Long id){
+        return repository.findById(id).map(ProductConvert::toDto).orElse(ProductDto.builder().build());
     }
 
-    public Product insert(Product obj){
-        return repository.save(obj);
+    public ProductDto insert(RequestDto obj){
+        return ProductConvert.toDto(repository.save(ProductConvert.toEntity(obj)));
     }
 
-    public List<Product> insertByCsv(MultipartFile file) {
+    public List<ProductDto> insertByCsv(MultipartFile file) {
         try {
             List<Product> products = CsvHelper.toProductList(file.getInputStream());
-            return repository.saveAll(products);
+            return ProductConvert.toDtoList(repository.saveAll(products));
         } catch (IOException e) {
             throw new ProductServiceException("Erro ao armazenar os dados do arquivo: "+e.getMessage());
         }
@@ -51,11 +53,11 @@ public class ProductService {
         }
     }
 
-    public Product update(Long id, Product obj){
+    public ProductDto update(Long id, RequestDto obj){
         try{
             Product productEntity = repository.getById(id);
-            updateData(productEntity, obj);
-            return repository.save(productEntity);
+            updateData(productEntity, ProductConvert.toEntity(obj));
+            return ProductConvert.toDto(repository.save(productEntity.withId(id)));
         } catch (EntityNotFoundException e){
             throw new ResourceNotFoundException(id);
         }

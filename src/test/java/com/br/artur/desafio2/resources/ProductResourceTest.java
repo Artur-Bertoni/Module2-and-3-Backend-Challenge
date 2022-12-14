@@ -1,7 +1,7 @@
 package com.br.artur.desafio2.resources;
 
 import com.br.artur.desafio2.creator.ProductCreator;
-import com.br.artur.desafio2.dto.RequestDTO;
+import com.br.artur.desafio2.dto.RequestDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,39 +27,39 @@ public class ProductResourceTest {
     private String URL = "/products";
 
     @Test
-    void findAllShouldReturnResponseEntityWhenSuccess() throws Exception{
+    void findAllShouldReturnProductDtoListWhenSuccess() throws Exception{
         mockMvc.perform(MockMvcRequestBuilders.get(URL).contentType(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.[0].category").exists())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.[0].category").value("FOOD"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.[0].category").value("Comida"));
     }
 
     @Test
-    void findAllShouldReturnResponseEntityWhenSuccessV2() throws Exception{
+    void findAllShouldReturnProductDtoListWhenSuccessV2() throws Exception{
         ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get(URL)
                 .contentType(MediaType.APPLICATION_JSON));
 
         result.andDo(MockMvcResultHandlers.print());
         result.andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
         result.andExpect(MockMvcResultMatchers.jsonPath("$.[0].category").exists());
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.[0].category").value("FOOD"));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.[0].category").value("Comida"));
     }
 
     @Test
-    void findByIdShouldReturnResponseEntityWhenSuccess() throws Exception{
+    void findByIdShouldReturnProductDtoWhenSuccess() throws Exception{
         ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get(URL.concat("/{id}"),1)
                 .contentType(MediaType.APPLICATION_JSON));
 
         result.andDo(MockMvcResultHandlers.print());
         result.andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
         result.andExpect(MockMvcResultMatchers.jsonPath("$.category").exists());
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.category").value("FOOD"));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.category").value("Eletrodomésticos"));
     }
 
     @Test
-    void insertShouldReturnResponseEntityWhenSuccess() throws Exception{
-        RequestDTO request = ProductCreator.createRequest();
+    void insertShouldProductDtoEntityWhenSuccess() throws Exception{
+        RequestDto request = ProductCreator.createRequest();
         String jsonBody = objectMapper.writeValueAsString(request);
         ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post(URL)
                         .content(jsonBody)
@@ -86,7 +86,7 @@ public class ProductResourceTest {
 
     @Test
     void insertShouldReturnResponseEntityWhenSuccessFaker() throws Exception{
-        RequestDTO request = ProductCreator.createFakerRequest();
+        RequestDto request = ProductCreator.createFakerRequest();
         String jsonBody = objectMapper.writeValueAsString(request);
         ResultActions result = mockMvc.perform(MockMvcRequestBuilders.post(URL)
                 .content(jsonBody)
@@ -113,16 +113,15 @@ public class ProductResourceTest {
 
     @Test
     void updateShouldReturnResponseEntityWhenSuccess() throws Exception{
-        RequestDTO request = ProductCreator.updateRequest();
+        RequestDto request = ProductCreator.updateRequest();
         String jsonBody = objectMapper.writeValueAsString(request);
-        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.put(URL.concat("/{id}"),2)
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders.put(URL.concat("/{id}"),3)
                 .content(jsonBody)
                 .contentType(MediaType.APPLICATION_JSON));
 
         result.andDo(MockMvcResultHandlers.print());
         result.andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
         result.andExpect(MockMvcResultMatchers.jsonPath("$.id").exists());
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.code").value(request.getCode()));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.category").value(request.getCategory()));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.series").value(request.getSeries()));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.description").value(request.getDescription()));
@@ -133,8 +132,7 @@ public class ProductResourceTest {
         result.andExpect(MockMvcResultMatchers.jsonPath("$.taxes").value(request.getTaxes()));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.price").value(request.getPrice()));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.quantity").value(request.getQuantity()));
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.barCode").value(request.getBarCode()));
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.manufacturingDate").value(request.getManufacturingDate()));
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.expirationDate").value(request.getExpirationDate()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.manufacturingDate").value(request.getManufacturingDate().toString()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.expirationDate").value(request.getExpirationDate().toString()));
     }
 }

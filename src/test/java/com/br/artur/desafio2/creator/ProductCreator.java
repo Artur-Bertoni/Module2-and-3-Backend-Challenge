@@ -1,6 +1,6 @@
 package com.br.artur.desafio2.creator;
 
-import com.br.artur.desafio2.dto.RequestDTO;
+import com.br.artur.desafio2.dto.RequestDto;
 import com.github.javafaker.Faker;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -9,8 +9,8 @@ import java.time.Instant;
 
 public class ProductCreator {
 
-    public static RequestDTO createRequest(){
-        return RequestDTO.builder()
+    public static RequestDto createRequest(){
+        return RequestDto.builder()
                 .barCode(123456789L)
                 .color("Vermelha")
                 .code(RandomStringUtils.randomAlphanumeric(8).toLowerCase())
@@ -28,10 +28,10 @@ public class ProductCreator {
                 .build();
     }
 
-    public static RequestDTO createFakerRequest() {
+    public static RequestDto createFakerRequest() {
         Faker faker = new Faker();
 
-        return RequestDTO.builder()
+        return RequestDto.builder()
                 .barCode(faker.number().randomNumber())
                 .color(faker.commerce().color())
                 .code(RandomStringUtils.randomAlphanumeric(8).toLowerCase())
@@ -49,11 +49,9 @@ public class ProductCreator {
                 .build();
     }
 
-    public static RequestDTO updateRequest(){
-        return RequestDTO.builder()
-                .barCode(987654321L)
+    public static RequestDto updateRequest(){
+        return RequestDto.builder()
                 .color("Azul")
-                .code("qkbt5mva")
                 .description("Mesa grande")
                 .name("Mesa")
                 .price(new BigDecimal(1))
