@@ -1,4 +1,4 @@
-package com.br.artur.desafio2.exception;
+package com.br.artur.desafio2.service.exceptions;
 
 public class ProductServiceException extends RuntimeException{
 

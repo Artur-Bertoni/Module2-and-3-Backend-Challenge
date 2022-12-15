@@ -1,12 +1,23 @@
 package com.br.artur.desafio2.service;
 
+import com.br.artur.desafio2.convert.ProductConvert;
+import com.br.artur.desafio2.dto.ProductDto;
+import com.br.artur.desafio2.dto.RequestDto;
 import com.br.artur.desafio2.entity.Product;
+import com.br.artur.desafio2.helper.CsvHelper;
 import com.br.artur.desafio2.repository.ProductRepository;
+import com.br.artur.desafio2.service.exceptions.ProductServiceException;
+import com.br.artur.desafio2.service.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -14,99 +25,65 @@ public class ProductService {
     @Autowired
     private ProductRepository repository;
 
-    public List<Product> findAll(){
-        return repository.findAll();
+    public List<ProductDto> findAll(){
+        return repository.findAll().stream().map(ProductConvert::toDto).collect(Collectors.toList());
     }
 
-    public Product findById(Long id){
-        Optional<Product> obj = repository.findById(id);
-        return obj.get();
+    public ProductDto findById(Long id){
+        return repository.findById(id).map(ProductConvert::toDto).orElse(ProductDto.builder().build());
     }
-    /*
-    public void addProductByImport(String path) {
-        Product p = new Product();
-        try{
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-            CSVReader csvReader = new CSVReader(new FileReader(path));
 
-            List<Map<String,String>> lines = new ArrayList<>();
+    public ProductDto insert(RequestDto request){
+        return ProductConvert.toDto(repository.save(ProductConvert.toEntity(request)));
+    }
 
-            String[] headers = csvReader.readNext(),
-                    columns;
-
-            for (int i=0; i < headers.length; i++){
-                headers[i] = headers[i].toLowerCase();
-            }
-
-            while (true){
-                try {
-                    if ((columns = csvReader.readNext()) == null) break;
-                } catch (IOException | CsvValidationException e) {
-                    throw new RuntimeException(e);
-                }
-                Map<String,String> campos = new HashMap<>();
-
-                for (int i=0; i< columns.length; i++){
-                    campos.put(headers[i], columns[i]);
-                }
-
-                lines.add(campos);
-            }
-
-            final int[] cont = {0};
-
-            lines.forEach(cols -> {
-                String code = cols.get("código");
-                Long barCode = cols.get("codigo de barras").equals("null") ? null : Long.parseLong(cols.get("codigo de barras"));
-                String series = cols.get("série");
-                String name = cols.get("nome");
-                String description = cols.get("descrição");
-                String category = cols.get("categoria");
-                BigDecimal taxes = cols.get("impostos (%)").equals("null") ? null : new BigDecimal(cols.get("impostos (%)").replace(',','.'));
-                BigDecimal grossAmount = cols.get("valor bruto").equals("null") ? null : new BigDecimal(cols.get("valor bruto").replace(',','.'));
-                BigDecimal price = null;
-                if (taxes != null && grossAmount != null){
-                    price = grossAmount.add((taxes.divide(BigDecimal.valueOf(100))).multiply(grossAmount));
-                    price = price.add(price.multiply(BigDecimal.valueOf(0.45)));
-                }
-                Date manufacturingDate = null, expirationDate = null;
-                Integer quantity = (cols.get("quantidade") == null || cols.get("quantidade").equals("null")) ? null : Integer.parseInt(cols.get("quantidade"));
-
-                try {
-                    if (!cols.get("data de fabricação").equals("n/a") && !cols.get("data de fabricação").equals("") && !cols.get("data de fabricação").equals("null")){
-                        manufacturingDate = sdf.parse(cols.get("data de fabricação"));
-                    }
-                    if (!cols.get("data de validade").equals("n/a") && !cols.get("data de validade").equals("") && !cols.get("data de validade").equals("null")){
-                        expirationDate = sdf.parse(cols.get("data de validade"));
-                    }
-                } catch (ParseException e) {
-                    throw new ProductServiceException(e.getMessage());
-                }
-
-                String color = cols.get("cor");
-                String material = cols.get("material");
-
-                p.setCode(code);
-                p.setBarCode(barCode);
-                p.setSeries(series);
-                p.setName(name);
-                p.setDescription(description);
-                p.setCategory(category);
-                p.setGrossAmount(grossAmount);
-                p.setTaxes(taxes);
-                p.setPrice(price);
-                p.setManufacturingDate(manufacturingDate);
-                p.setExpirationDate(expirationDate);
-                p.setColor(color);
-                p.setMaterial(material);
-                p.setQuantity(quantity);
-
-                p.products.add(p);
-                cont[0]++;
-            });
-        } catch(Exception e){
-            throw new ProductServiceException(e.getMessage());
+    public List<ProductDto> insertByCsv(MultipartFile file) {
+        try {
+            List<Product> products = CsvHelper.toProductList(file.getInputStream());
+            return ProductConvert.toDtoList(repository.saveAll(products));
+        } catch (IOException e) {
+            throw new ProductServiceException("Erro ao armazenar os dados do arquivo: "+e.getMessage());
+        } catch (NullPointerException e){
+            throw new ProductServiceException("Null pointer");
         }
     }
- */
+
+    public void delete(Long id) {
+        try{
+            repository.deleteById(id);
+        } catch (EmptyResultDataAccessException e){
+            throw new ResourceNotFoundException(id);
+        }
+    }
+
+    public ProductDto update(Long id, RequestDto request){
+        try{
+            Optional<Product> opt = repository.findById(id);
+
+            if (!opt.isPresent()) {
+                throw new EntityNotFoundException("Produto não encontrado");
+            }
+            Product productEntity = opt.get();
+
+            updateData(productEntity, ProductConvert.toEntity(request));
+            return ProductConvert.toDto(repository.save(productEntity));
+        } catch (EntityNotFoundException e){
+            throw new ResourceNotFoundException(id);
+        }
+    }
+
+    private void updateData(Product productEntity, Product product) {
+        productEntity.setCategory(product.getCategory());
+        productEntity.setDescription(product.getDescription());
+        productEntity.setColor(product.getColor());
+        productEntity.setExpirationDate(product.getExpirationDate());
+        productEntity.setName(product.getName());
+        productEntity.setMaterial(product.getMaterial());
+        productEntity.setPrice(product.getPrice());
+        productEntity.setSeries(product.getSeries());
+        productEntity.setGrossAmount(product.getGrossAmount());
+        productEntity.setManufacturingDate(product.getManufacturingDate());
+        productEntity.setTaxes(product.getTaxes());
+        productEntity.setQuantity(product.getQuantity());
+    }
 }
