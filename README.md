@@ -11,7 +11,7 @@ O contexto apresentado foi o de criar um aplicativo de uma loja simples, com as 
 - Caso o endpoint "/update" (para a função de importar um arquivo CSV não esteja funcionando, tente remover o arquivo e adicioná-lo novamente;
 
 ## [Dependências utilizadas](https://github.com/Artur-Bertoni/desafioBackendModulo2/blob/main/pom.xml)
-- [Spring Boot](https://spring.io/projects/spring-boot) (org.springframework.boot) -> utilizando os artefatos [starter-data-jpa](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa),[starter-web](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web),[starter-test](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test),[starter-thymeleaf](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-thymeleaf) e [devtools](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devtools);
+- [Spring Boot](https://spring.io/projects/spring-boot) (org.springframework.boot) -> utilizando os artefatos [starter-data-jpa](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa), [starter-web](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web), [starter-test](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test), [starter-thymeleaf](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-thymeleaf) e [devtools](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devtools);
 - [Flyway](https://flywaydb.org) (org.flywaydb);
 - [PostgreSQL](https://www.postgresql.org) (org.postgresql);
 - [H2](https://www.h2database.com/html/main.html) (com.h2database);
