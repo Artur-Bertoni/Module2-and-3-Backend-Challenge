@@ -1,7 +1,7 @@
 #PostgreSql
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/desafio2
+    url: jdbc:postgresql://localhost:5432/produto-api
     username: postgres
     password: 12022004abs
 
@@ -13,7 +13,7 @@ spring:
             non_contextual_creation: true
         format_sql: true
     hibernate:
-      ddl_auto: update
+      ddl_auto: none
     show-sql: true
     database-platform: org.hibernate.dialect.PostgreSQL9Dialect
 

@@ -3,7 +3,7 @@ version: '3.1'
 services:
 
   products_api:
-    container_name: products_api
+    container_name: produto-api
     image: product_image:v1
     restart: always
     ports:
@@ -17,12 +17,12 @@ services:
       - db_products_api
 
   db_products_api:
-    container_name: db_products_api
+    container_name: db_produto-api
     image: postgres
     restart: always
     ports:
       - "5433:5432"
     environment:
-      - POSTGRES_DB=desafio2
+      - POSTGRES_DB=produto-api
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=12022004abs
