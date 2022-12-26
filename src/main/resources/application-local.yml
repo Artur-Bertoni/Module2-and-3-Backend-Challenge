@@ -12,6 +12,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-    generate-ddl: on
+    generate-ddl: false
   flyway:
-    enabled: false
+    enabled: true

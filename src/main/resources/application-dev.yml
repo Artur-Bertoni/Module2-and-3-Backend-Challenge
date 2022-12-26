@@ -1,9 +1,8 @@
-#PostgreSql
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/produto-api
-    username: postgres
-    password: 12022004abs
+    url: ${URL_POSTGRES}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
 
   jpa:
     properties:
