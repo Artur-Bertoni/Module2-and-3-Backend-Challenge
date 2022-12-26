@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.br.artur</groupId>
-	<artifactId>desafio2</artifactId>
+	<artifactId>produto-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>desafioBackendModulo2</name>
-	<description>Desafio modulo 2</description>
+	<name>produto-api</name>
+	<description>produto-api</description>
 	<properties>
 		<java.version>11</java.version>
 	</properties>

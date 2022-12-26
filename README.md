@@ -1,5 +1,5 @@
-# Desafio Backend Modulo 2
-Desafio Módulo 2 da trilha Impulsionar 2.0 - Backend
+# Desafio South Impulsionar
+Desafio da trilha Impulsionar 2.0 - Backend
 
 ## Objetivo
 O objetivo desse desafio era de alterar o [Desafio do Módulo 1](https://github.com/Artur-Bertoni/desafioBackendModulo1) para um software com conexão com banco de dados e implementando novas features estudadas na trilha, como Automação de API, Docker, SpringBoot e [outras](doc:requisitos-e-funcionalidades-esperadas).

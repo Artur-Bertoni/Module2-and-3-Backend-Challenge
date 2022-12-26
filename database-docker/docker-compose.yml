@@ -3,13 +3,13 @@ version: '3.1'
 services:
 
   products_api:
-    container_name: products_api
-    image: product_image:v1
+    container_name: produto-api
+    image: arturbertoni/produto-api:v1
     restart: always
     ports:
-      - "8080:8080"
+      - "8081:8080"
     environment:
-      - URL_POSTGRES=jdbc:postgresql://db_products_api:5432/desafio2
+      - URL_POSTGRES=jdbc:postgresql://db_products_api:5432/produto-api
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=12022004abs
       - SPRING_PROFILES_ACTIVE=docker
@@ -17,12 +17,12 @@ services:
       - db_products_api
 
   db_products_api:
-    container_name: db_products_api
+    container_name: db_produto-api
     image: postgres
     restart: always
     ports:
       - "5433:5432"
     environment:
-      - POSTGRES_DB=desafio2
+      - POSTGRES_DB=produto-api
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=12022004abs
