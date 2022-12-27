@@ -12,12 +12,11 @@ services:
       - URL_POSTGRES=jdbc:postgresql://db_products_api:5432/produto-api
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=12022004abs
-      - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       - db_products_api
 
   db_products_api:
-    container_name: db_produto-api
+    container_name: db_produto_api
     image: postgres
     restart: always
     ports:

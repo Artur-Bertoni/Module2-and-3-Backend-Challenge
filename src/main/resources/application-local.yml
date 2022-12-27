@@ -3,6 +3,7 @@ spring:
     url: jdbc:h2:mem:produto-api-db;MODE=PostgreSQL;DB_CLOSE_ON_EXIT=FALSE;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;
     username: sa
     password:
+    driver-class-name: org.h2.Driver
   h2:
     console:
       enabled: true
@@ -12,6 +13,13 @@ spring:
     properties:
       hibernate:
         format_sql: true
+    hibernate:
+        ddl_auto: none
     generate-ddl: false
   flyway:
+    url: ${spring.datasource.url}
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+    locations: classpath:db/migration
     enabled: true
+    validate-on-migrate: true
