@@ -11,12 +11,12 @@ services:
     environment:
       - URL_POSTGRES=jdbc:postgresql://db_products_api:5432/produto-api
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=12022004abs
+      - POSTGRES_PASSWORD=12022004
     depends_on:
       - db_products_api
 
   db_products_api:
-    container_name: db_produto_api
+    container_name: postgres
     image: postgres
     restart: always
     ports:
@@ -24,4 +24,17 @@ services:
     environment:
       - POSTGRES_DB=produto-api
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=12022004abs
+      - POSTGRES_PASSWORD=12022004
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ./rabbitmqData:/var/lib/rabbitmq/
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=12022004
