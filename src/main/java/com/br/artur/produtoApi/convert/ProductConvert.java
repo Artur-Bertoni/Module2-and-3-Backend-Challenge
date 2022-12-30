@@ -47,28 +47,4 @@ public class ProductConvert {
                 .category(p.getCategory())
                 .build();
     }
-
-    public static List<ProductDto> toDtoList(List<Product> pl){
-        List<ProductDto> dtoList = new ArrayList<>();
-
-        for (Product p : pl){
-            dtoList.add(ProductDto.builder()
-                    .barCode(p.getBarCode())
-                    .color(p.getColor())
-                    .code(p.getCode())
-                    .description(p.getDescription())
-                    .name(p.getName())
-                    .price(p.getPrice())
-                    .expirationDate(p.getExpirationDate())
-                    .grossAmount(p.getGrossAmount())
-                    .taxes(p.getTaxes())
-                    .series(p.getSeries())
-                    .material(p.getMaterial())
-                    .quantity(p.getQuantity())
-                    .manufacturingDate(p.getManufacturingDate())
-                    .category(p.getCategory())
-                    .build());
-        }
-        return dtoList;
-    }
 }

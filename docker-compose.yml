@@ -11,6 +11,7 @@ services:
       - URL_POSTGRES=jdbc:postgresql://db_products_api:5432/produto-api
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=12022004
+      - SPRING_PROFILES_ACTIVE=dev
     depends_on:
       - db_products_api
 

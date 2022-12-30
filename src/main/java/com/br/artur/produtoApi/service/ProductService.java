@@ -40,7 +40,7 @@ public class ProductService {
     public List<ProductDto> insertByCsv(MultipartFile file) {
         try {
             List<Product> products = CsvHelper.toProductList(file.getInputStream());
-            return ProductConvert.toDtoList(repository.saveAll(products));
+            return repository.saveAll(products).stream().map(entity -> ProductConvert.toDto(entity)).collect(Collectors.toList());
         } catch (IOException e) {
             throw new ProductServiceException("Erro ao armazenar os dados do arquivo: "+e.getMessage());
         } catch (NullPointerException e){

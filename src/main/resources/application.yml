@@ -1,7 +1,4 @@
 spring:
-  profiles:
-    active: dev
-
   jpa:
     open-in-view: true
 
@@ -13,5 +10,6 @@ spring:
   rabbitmq:
     host: localhost
     port: 5672
-    username: ${RABBITMQ_DEFAULT_USER}
-    password: ${RABBITMQ_DEFAULT_PASS}
+    username: ${RABBITMQ_DEFAULT_USER:admin}
+    password: ${RABBITMQ_DEFAULT_PASS:12022004}
+    virtual-host: /

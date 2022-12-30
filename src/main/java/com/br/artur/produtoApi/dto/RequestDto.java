@@ -6,6 +6,7 @@ import lombok.With;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Date;
 
 @Data
 @Builder
