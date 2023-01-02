@@ -22,30 +22,30 @@ public class ProductResource {
 
     @GetMapping
     @ResponseBody
-    public List<ProductDto> findAll(){
-        return service.findAll();
+    public List<ProductDto> getAll(){
+        return service.getAll();
     }
 
     @GetMapping(value = "/{id}")
     @ResponseBody
-    public ProductDto findById(@PathVariable Long id){
-        return service.findById(id);
+    public ProductDto getById(@PathVariable Long id){
+        return service.getById(id);
     }
 
     @PostMapping
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
-    public ProductDto insert(@RequestBody RequestDto request) {
-        return service.insert(request);
+    public ProductDto post(@RequestBody RequestDto request) {
+        return service.post(request);
     }
 
     @PostMapping("/upload")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
-    public List<ProductDto> insertByCsv(@RequestParam("file") MultipartFile file) {
+    public List<ProductDto> postByCsv(@RequestParam("file") MultipartFile file) {
         if (CsvHelper.isCsv(file)) {
             try {
-                return service.insertByCsv(file);
+                return service.postByCsv(file);
             } catch (Exception e) {
                 throw new ProductServiceException("Não foi possível importar o arquivo: "+e.getMessage());
             }
@@ -62,7 +62,7 @@ public class ProductResource {
 
     @PutMapping(value = "/{id}")
     @ResponseBody
-    public ProductDto update(@PathVariable Long id, @RequestBody RequestDto request){
-        return service.update(id, request);
+    public ProductDto put(@PathVariable Long id, @RequestBody RequestDto request){
+        return service.put(id, request);
     }
 }

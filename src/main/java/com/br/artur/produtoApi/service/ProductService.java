@@ -25,19 +25,19 @@ public class ProductService {
     @Autowired
     private ProductRepository repository;
 
-    public List<ProductDto> findAll(){
+    public List<ProductDto> getAll(){
         return repository.findAll().stream().map(ProductConvert::toDto).collect(Collectors.toList());
     }
 
-    public ProductDto findById(Long id){
+    public ProductDto getById(Long id){
         return repository.findById(id).map(ProductConvert::toDto).orElse(ProductDto.builder().build());
     }
 
-    public ProductDto insert(RequestDto request){
+    public ProductDto post(RequestDto request){
         return ProductConvert.toDto(repository.save(ProductConvert.toEntity(request)));
     }
 
-    public List<ProductDto> insertByCsv(MultipartFile file) {
+    public List<ProductDto> postByCsv(MultipartFile file) {
         try {
             List<Product> products = CsvHelper.toProductList(file.getInputStream());
             return repository.saveAll(products).stream().map(entity -> ProductConvert.toDto(entity)).collect(Collectors.toList());
@@ -56,7 +56,7 @@ public class ProductService {
         }
     }
 
-    public ProductDto update(Long id, RequestDto request){
+    public ProductDto put(Long id, RequestDto request){
         try{
             Optional<Product> opt = repository.findById(id);
 

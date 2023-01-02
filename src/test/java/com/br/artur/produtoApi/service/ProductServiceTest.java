@@ -32,7 +32,7 @@ public class ProductServiceTest {
         Product productSave = ProductConvert.toEntity(request);
 
         Mockito.when(repository.save(productSave)).thenReturn(productSave);
-        ProductDto response = service.insert(request);
+        ProductDto response = service.post(request);
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(response.getCode(), request.getCode());
@@ -44,7 +44,7 @@ public class ProductServiceTest {
         Product productSave = ProductConvert.toEntity(request);
 
         Mockito.when(repository.findAll()).thenReturn(List.of(productSave));
-        List<ProductDto> response = service.findAll();
+        List<ProductDto> response = service.getAll();
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(response.get(0).getCode(), request.getCode());
@@ -56,7 +56,7 @@ public class ProductServiceTest {
         Product productSave = ProductConvert.toEntity(request).withId(1L);
 
         Mockito.when(repository.findById(1L)).thenReturn(Optional.of(productSave));
-        ProductDto response = service.findById(1L);
+        ProductDto response = service.getById(1L);
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(response.getCode(), request.getCode());
@@ -69,7 +69,7 @@ public class ProductServiceTest {
 
         Mockito.when(repository.findById(1L)).thenReturn(Optional.of(productSave));
         Mockito.doNothing().when(repository).deleteById(1L);
-        ProductDto response = service.findById(1L);
+        ProductDto response = service.getById(1L);
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(response.getCode(), request.getCode());
@@ -83,7 +83,7 @@ public class ProductServiceTest {
         Mockito.when(repository.findById(1L)).thenReturn(Optional.of(productSave));
         Mockito.when(repository.save(productSave)).thenReturn(productSave);
 
-        ProductDto response = service.update(1L, request);
+        ProductDto response = service.put(1L, request);
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(response.getCode(), request.getCode());

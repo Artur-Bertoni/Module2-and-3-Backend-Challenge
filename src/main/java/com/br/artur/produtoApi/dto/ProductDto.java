@@ -6,7 +6,6 @@ import lombok.With;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.Date;
 
 @Data
 @Builder
@@ -19,5 +18,4 @@ public class ProductDto {
     private BigDecimal grossAmount, taxes, price;
     private Integer quantity;
     private Instant manufacturingDate, expirationDate;
-
 }

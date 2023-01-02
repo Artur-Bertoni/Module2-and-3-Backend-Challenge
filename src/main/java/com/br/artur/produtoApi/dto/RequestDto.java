@@ -4,14 +4,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.With;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.Date;
 
 @Data
 @Builder
 @With
-public class RequestDto {
+public class RequestDto implements Serializable {
 
     private Long barCode;
     private String code, category, series, description, color, material, name;
