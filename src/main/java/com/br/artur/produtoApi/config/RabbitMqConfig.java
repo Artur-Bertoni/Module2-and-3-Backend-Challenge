@@ -9,6 +9,7 @@ public class RabbitMqConfig {
 
     public static final String routingKey = "toProductQueue";
     public static final String exchangeName = "ProductExchange";
+    public static final String queueName = "ProductQueue";
 
     @Bean
     public DirectExchange directExchange(){
@@ -22,6 +23,6 @@ public class RabbitMqConfig {
 
     @Bean
     public Queue productQueue(){
-        return QueueBuilder.durable("ProductQueue").build();
+        return QueueBuilder.durable(queueName).build();
     }
 }
