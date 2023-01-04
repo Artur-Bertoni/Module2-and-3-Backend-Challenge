@@ -1,7 +1,7 @@
 package com.br.artur.produtoApi.creator;
 
 import com.br.artur.produtoApi.dto.RequestDto;
-import com.br.artur.produtoApi.entity.Product;
+import com.br.artur.produtoApi.service.ProductService;
 import com.github.javafaker.Faker;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -20,7 +20,7 @@ public class ProductCreator {
                 .expirationDate(Instant.now())
                 .grossAmount(new BigDecimal(11))
                 .taxes(new BigDecimal(10))
-                .series("1/2022")
+                .series("1/2023")
                 .material("n/a")
                 .manufacturingDate(Instant.now())
                 .category("Comida")
@@ -31,8 +31,7 @@ public class ProductCreator {
         Faker faker = new Faker();
 
         BigDecimal grossAmount = new BigDecimal(faker.commerce().price().replace(",", ".")),
-                   taxes = new BigDecimal(faker.number().randomDigitNotZero()),
-                   price = new BigDecimal(0);
+                   taxes = new BigDecimal(faker.number().randomDigitNotZero());
 
         return RequestDto.builder()
                 .barCode(String.valueOf(faker.number().randomNumber()))
@@ -40,11 +39,11 @@ public class ProductCreator {
                 .code(RandomStringUtils.randomAlphanumeric(8).toLowerCase())
                 .description(faker.food().ingredient())
                 .name(faker.commerce().productName())
-                .price(Product.priceCalculator(grossAmount,taxes))
+                .price(ProductService.priceCalculator(grossAmount,taxes))
                 .expirationDate(Instant.now())
                 .grossAmount(grossAmount)
                 .taxes(taxes)
-                .series(faker.number().randomDigitNotZero()+"/2022")
+                .series(faker.number().randomDigitNotZero()+"/2023")
                 .material(faker.commerce().material())
                 .quantity(faker.number().randomDigitNotZero())
                 .manufacturingDate(Instant.now())

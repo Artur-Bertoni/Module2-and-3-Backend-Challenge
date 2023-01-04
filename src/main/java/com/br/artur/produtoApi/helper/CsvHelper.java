@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.br.artur.produtoApi.entity.Product.priceCalculator;
+import static com.br.artur.produtoApi.service.ProductService.priceCalculator;
 
 public class CsvHelper {
 

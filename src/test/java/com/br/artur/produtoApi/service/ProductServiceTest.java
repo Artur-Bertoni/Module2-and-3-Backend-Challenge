@@ -2,9 +2,6 @@ package com.br.artur.produtoApi.service;
 
 import com.br.artur.produtoApi.convert.ProductConvert;
 import com.br.artur.produtoApi.creator.ProductCreator;
-import com.br.artur.produtoApi.dto.ProductDto;
-import com.br.artur.produtoApi.dto.RequestDto;
-import com.br.artur.produtoApi.entity.Product;
 import com.br.artur.produtoApi.repository.ProductRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -12,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.internal.matchers.Null;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
@@ -28,11 +26,11 @@ public class ProductServiceTest {
 
     @Test
     void insertTest() {
-        RequestDto request = ProductCreator.fakerRequest();
-        Product productSave = ProductConvert.toEntity(request);
+        var request = ProductCreator.fakerRequest();
+        var productSave = ProductConvert.toEntity(request);
 
         Mockito.when(repository.save(productSave)).thenReturn(productSave);
-        ProductDto response = service.post(request);
+        var response = service.post(request);
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(response.getCode(), request.getCode());
@@ -40,11 +38,11 @@ public class ProductServiceTest {
 
     @Test
     void findAllTest() {
-        RequestDto request = ProductCreator.fakerRequest();
-        Product productSave = ProductConvert.toEntity(request);
+        var request = ProductCreator.fakerRequest();
+        var productSave = ProductConvert.toEntity(request);
 
         Mockito.when(repository.findAll()).thenReturn(List.of(productSave));
-        List<ProductDto> response = service.getAll();
+        var response = service.getAll();
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(response.get(0).getCode(), request.getCode());
@@ -52,11 +50,11 @@ public class ProductServiceTest {
 
     @Test
     void findByIdTest() {
-        RequestDto request = ProductCreator.fakerRequest();
-        Product productSave = ProductConvert.toEntity(request).withId(1L);
+        var request = ProductCreator.fakerRequest();
+        var productSave = ProductConvert.toEntity(request).withId(1L);
 
         Mockito.when(repository.findById(1L)).thenReturn(Optional.of(productSave));
-        ProductDto response = service.getById(1L);
+        var response = service.getById(1L);
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(response.getCode(), request.getCode());
@@ -64,12 +62,12 @@ public class ProductServiceTest {
 
     @Test
     void deleteTest() {
-        RequestDto request = ProductCreator.fakerRequest();
-        Product productSave = ProductConvert.toEntity(request).withId(1L);
+        var request = ProductCreator.fakerRequest();
+        var productSave = ProductConvert.toEntity(request).withId(1L);
 
         Mockito.when(repository.findById(1L)).thenReturn(Optional.of(productSave));
         Mockito.doNothing().when(repository).deleteById(1L);
-        ProductDto response = service.getById(1L);
+        var response = service.getById(1L);
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(response.getCode(), request.getCode());
@@ -77,13 +75,13 @@ public class ProductServiceTest {
 
     @Test
     void updateTest() {
-        RequestDto request = ProductCreator.fakerRequest();
-        Product productSave = ProductConvert.toEntity(request).withId(1L);
+        var request = ProductCreator.fakerRequest();
+        var productSave = ProductConvert.toEntity(request).withId(1L);
 
         Mockito.when(repository.findById(1L)).thenReturn(Optional.of(productSave));
         Mockito.when(repository.save(productSave)).thenReturn(productSave);
 
-        ProductDto response = service.put(1L, request);
+        var response = service.put(1L, request);
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(response.getCode(), request.getCode());
