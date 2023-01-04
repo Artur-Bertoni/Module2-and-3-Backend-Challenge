@@ -40,9 +40,12 @@ public class ProductService {
 
         request.getGrossAmount().setScale(2, BigDecimal.ROUND_HALF_EVEN);
         request.getTaxes().setScale(2,BigDecimal.ROUND_HALF_EVEN);
-        request.setPrice(Product.priceCalculator(request.getGrossAmount(),request.getTaxes()));
+        request.setPrice(priceCalculator(request.getGrossAmount(),request.getTaxes()));
 
-        return ProductConvert.toDto(repository.save(ProductConvert.toEntity(request)));
+        System.out.println(ProductConvert.toEntity(request));
+        System.out.println(repository.save(ProductConvert.toEntity(request)));
+
+        return ProductConvert.toDto(this.repository.save(ProductConvert.toEntity(request)));
     }
 
     public List<ProductDto> postByCsv(MultipartFile file) {
@@ -75,7 +78,7 @@ public class ProductService {
             request.getTaxes().setScale(2,BigDecimal.ROUND_HALF_EVEN);
 
             updateData(productEntity, ProductConvert.toEntity(request));
-            return ProductConvert.toDto(repository.save(productEntity));
+            return ProductConvert.toDto(this.repository.save(productEntity));
         } catch (EntityNotFoundException e){
             throw new ResourceNotFoundException(id);
         }
@@ -94,5 +97,11 @@ public class ProductService {
         productEntity.setManufacturingDate(product.getManufacturingDate());
         productEntity.setTaxes(product.getTaxes());
         productEntity.setQuantity(product.getQuantity());
+    }
+
+    public static BigDecimal priceCalculator(BigDecimal grossAmount, BigDecimal taxes){
+        BigDecimal price = grossAmount.add((taxes.divide(BigDecimal.valueOf(100))).multiply(grossAmount));
+        price = price.add(price.multiply(BigDecimal.valueOf(0.45))).setScale(2,BigDecimal.ROUND_HALF_UP);
+        return price;
     }
 }
