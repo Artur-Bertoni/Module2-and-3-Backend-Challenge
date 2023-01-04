@@ -2,6 +2,7 @@ package com.br.artur.produtoApi.resources;
 
 import com.br.artur.produtoApi.creator.ProductCreator;
 import com.br.artur.produtoApi.dto.RequestDto;
+import com.br.artur.produtoApi.entity.Product;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.math.BigDecimal;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -35,7 +38,7 @@ public class ProductResourceTest {
         result.andDo(MockMvcResultHandlers.print());
         result.andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
         result.andExpect(MockMvcResultMatchers.jsonPath("$.[0].category").exists());
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.[0].category").value("Comida"));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.[0].category").value("FOOD"));
     }
 
     @Test
@@ -47,7 +50,7 @@ public class ProductResourceTest {
         result.andDo(MockMvcResultHandlers.print());
         result.andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
         result.andExpect(MockMvcResultMatchers.jsonPath("$.category").exists());
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.category").value("Eletrodomésticos"));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.category").value("FOOD"));
     }
 
     @Test
@@ -71,9 +74,9 @@ public class ProductResourceTest {
         result.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(request.getName()));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.grossAmount").value(request.getGrossAmount()));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.taxes").value(request.getTaxes()));
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.price").value(request.getPrice()));
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.quantity").value(request.getQuantity()));
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.barCode").value(request.getBarCode()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.price").value(Product.priceCalculator(request.getGrossAmount(),request.getTaxes())));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.quantity").value(0));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.barCode").value(request.getBarCode()+0));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.manufacturingDate").value(request.getManufacturingDate().toString()));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.expirationDate").value(request.getExpirationDate().toString()));
     }
@@ -101,7 +104,7 @@ public class ProductResourceTest {
         result.andExpect(MockMvcResultMatchers.jsonPath("$.taxes").value(request.getTaxes()));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.price").value(request.getPrice()));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.quantity").value(request.getQuantity()));
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.barCode").value(request.getBarCode()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.barCode").value(request.getBarCode()+request.getQuantity()));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.manufacturingDate").value(request.getManufacturingDate().toString()));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.expirationDate").value(request.getExpirationDate().toString()));
     }

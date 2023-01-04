@@ -28,7 +28,7 @@ public class Product implements Serializable {
 
     public static BigDecimal priceCalculator(BigDecimal grossAmount, BigDecimal taxes){
         BigDecimal price = grossAmount.add((taxes.divide(BigDecimal.valueOf(100))).multiply(grossAmount));
-        price = price.add(price.multiply(BigDecimal.valueOf(0.45)));
+        price = price.add(price.multiply(BigDecimal.valueOf(0.45))).setScale(2,BigDecimal.ROUND_HALF_UP);
         return price;
     }
 }

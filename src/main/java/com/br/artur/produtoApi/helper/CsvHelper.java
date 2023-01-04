@@ -47,8 +47,8 @@ public class CsvHelper {
                 String category = csvRecord.get("categoria");
                 String color = csvRecord.get("cor");
                 String material = csvRecord.get("material");
-                BigDecimal taxes = csvRecord.get("impostos (%)").equals("null") ? null : new BigDecimal(csvRecord.get("impostos (%)").replace(',', '.'));
-                BigDecimal grossAmount = csvRecord.get("valor bruto").equals("null") ? null : new BigDecimal(csvRecord.get("valor bruto").replace(',', '.'));
+                BigDecimal taxes = csvRecord.get("impostos (%)").equals("null") ? null : new BigDecimal(csvRecord.get("impostos (%)").replace(',', '.')).setScale(2,BigDecimal.ROUND_HALF_EVEN);
+                BigDecimal grossAmount = csvRecord.get("valor bruto").equals("null") ? null : new BigDecimal(csvRecord.get("valor bruto").replace(',', '.')).setScale(2,BigDecimal.ROUND_HALF_EVEN);
                 Integer quantity = 0;
                 String barCode = csvRecord.get("codigo de barras")+quantity;
 
