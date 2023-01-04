@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static com.br.artur.produtoApi.entity.Product.priceCalculator;
+
 public class CsvHelper {
 
     public static String TYPE = "text/csv";
@@ -45,16 +47,13 @@ public class CsvHelper {
                 String category = csvRecord.get("categoria");
                 String color = csvRecord.get("cor");
                 String material = csvRecord.get("material");
-                Long barCode = csvRecord.get("codigo de barras").equals("null") ? null : Long.parseLong(csvRecord.get("codigo de barras"));
                 BigDecimal taxes = csvRecord.get("impostos (%)").equals("null") ? null : new BigDecimal(csvRecord.get("impostos (%)").replace(',', '.'));
                 BigDecimal grossAmount = csvRecord.get("valor bruto").equals("null") ? null : new BigDecimal(csvRecord.get("valor bruto").replace(',', '.'));
                 Integer quantity = 0;
+                String barCode = csvRecord.get("codigo de barras")+quantity;
 
-                BigDecimal price = null;
-                if (taxes != null && grossAmount != null) {
-                    price = grossAmount.add((taxes.divide(BigDecimal.valueOf(100))).multiply(grossAmount));
-                    price = price.add(price.multiply(BigDecimal.valueOf(0.45)));
-                }
+                assert grossAmount != null && taxes != null;
+                BigDecimal price = priceCalculator(grossAmount,taxes);
 
                 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
                 Date manufacturingDate = null, expirationDate = null;
@@ -66,11 +65,11 @@ public class CsvHelper {
                 }
 
                 if (expirationDate != null && manufacturingDate != null) {
-                    Product product = new Product(null,code,category,series,description,color,material,name,grossAmount,taxes,price,quantity,barCode,manufacturingDate.toInstant(),expirationDate.toInstant());
+                    Product product = new Product(null,code,category,series,description,color,material,name,barCode,grossAmount,taxes,price,quantity,manufacturingDate.toInstant(),expirationDate.toInstant());
 
                     products.add(product);
                 } else{
-                    Product product = new Product(null,code,category,series,description,color,material,name,grossAmount,taxes,price,quantity,barCode,null,null);
+                    Product product = new Product(null,code,category,series,description,color,material,name,barCode,grossAmount,taxes,price,quantity,null,null);
 
                     products.add(product);
                 }

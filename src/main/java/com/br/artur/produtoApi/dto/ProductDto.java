@@ -13,8 +13,7 @@ import java.time.Instant;
 public class ProductDto {
 
     private Long id;
-    private Long barCode;
-    private String code, category, series, description, color, material, name;
+    private String code, category, series, description, color, material, name, barCode;
     private BigDecimal grossAmount, taxes, price;
     private Integer quantity;
     private Instant manufacturingDate, expirationDate;

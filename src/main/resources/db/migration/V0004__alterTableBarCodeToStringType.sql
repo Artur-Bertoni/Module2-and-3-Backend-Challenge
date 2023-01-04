@@ -1,0 +1,2 @@
+ALTER TABLE tb_product ALTER COLUMN bar_code TYPE VARCHAR(20);
+ALTER TABLE tb_product ALTER COLUMN quantity SET DEFAULT 0;

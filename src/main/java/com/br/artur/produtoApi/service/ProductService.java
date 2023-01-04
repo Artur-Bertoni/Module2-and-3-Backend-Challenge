@@ -34,17 +34,18 @@ public class ProductService {
     }
 
     public ProductDto post(RequestDto request){
+        request.setQuantity(request.getQuantity() == null ? 0 : request.getQuantity());
+        request.setBarCode(request.getBarCode()+request.getQuantity());
+        request.setPrice(Product.priceCalculator(request.getGrossAmount(),request.getTaxes()));
         return ProductConvert.toDto(repository.save(ProductConvert.toEntity(request)));
     }
 
     public List<ProductDto> postByCsv(MultipartFile file) {
         try {
             List<Product> products = CsvHelper.toProductList(file.getInputStream());
-            return repository.saveAll(products).stream().map(entity -> ProductConvert.toDto(entity)).collect(Collectors.toList());
-        } catch (IOException e) {
+            return repository.saveAll(products).stream().map(ProductConvert::toDto).collect(Collectors.toList());
+        } catch (IOException | NullPointerException e) {
             throw new ProductServiceException("Erro ao armazenar os dados do arquivo: "+e.getMessage());
-        } catch (NullPointerException e){
-            throw new ProductServiceException("Null pointer");
         }
     }
 
