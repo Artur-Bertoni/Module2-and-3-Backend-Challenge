@@ -1,5 +1,6 @@
 package com.br.artur.produtoApi.service;
 
+import com.br.artur.produtoApi.config.RabbitMqConfig;
 import com.br.artur.produtoApi.convert.ProductConvert;
 import com.br.artur.produtoApi.dto.ProductDto;
 import com.br.artur.produtoApi.dto.RequestDto;
@@ -8,6 +9,7 @@ import com.br.artur.produtoApi.helper.CsvHelper;
 import com.br.artur.produtoApi.repository.ProductRepository;
 import com.br.artur.produtoApi.service.exceptions.ProductServiceException;
 import com.br.artur.produtoApi.service.exceptions.ResourceNotFoundException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,9 @@ public class ProductService {
 
     @Autowired
     private ProductRepository repository;
+
+    @Autowired
+    private RabbitMqService rabbitMqService;
 
     public List<ProductDto> getAll(){
         return repository.findAll().stream().map(ProductConvert::toDto).collect(Collectors.toList());
@@ -69,7 +74,7 @@ public class ProductService {
         try{
             Optional<Product> opt = repository.findById(id);
 
-            if (!opt.isPresent()) {
+            if (opt.isEmpty()) {
                 throw new EntityNotFoundException("Produto não encontrado");
             }
             Product productEntity = opt.get();
@@ -97,6 +102,27 @@ public class ProductService {
         productEntity.setManufacturingDate(product.getManufacturingDate());
         productEntity.setTaxes(product.getTaxes());
         productEntity.setQuantity(product.getQuantity());
+    }
+
+    //TODO continuar implementando patchQuantity (requisição -> service -> fila -> consumer (lê header e executa o q tá pedindo)
+    public ProductDto patchQuantity(Long id, Integer quantity) {
+        try{
+            Optional<Product> opt = repository.findById(id);
+
+            if (opt.isEmpty()) {
+                throw new EntityNotFoundException("Produto não encontrado");
+            }
+            Product productEntity = opt.get();
+            productEntity.setQuantity(quantity);
+
+            rabbitMqService.sendMessage(RabbitMqConfig.exchangeName,RabbitMqConfig.routingKey,ProductConvert.toDto(productEntity));
+
+            return ProductConvert.toDto(this.repository.save(productEntity));
+        } catch (EntityNotFoundException e){
+            throw new ResourceNotFoundException(id);
+        } catch (JsonProcessingException e) {
+            throw new ProductServiceException(e.getMessage());
+        }
     }
 
     public static BigDecimal priceCalculator(BigDecimal grossAmount, BigDecimal taxes){

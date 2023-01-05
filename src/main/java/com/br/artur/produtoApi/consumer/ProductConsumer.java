@@ -14,6 +14,7 @@ public class ProductConsumer {
     public void consumer(Message<String> message) {
         log.info("Receive message from '"+RabbitMqConfig.queueName+"'");
         var product = message.getPayload();
+        var productHeader = message.getHeaders().get("EVENT");
         log.info("Message Body: "+product);
     }
 }

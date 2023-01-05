@@ -64,7 +64,15 @@ public class ProductResource {
 
     @PutMapping(value = "/{id}")
     @ResponseBody
+    @ResponseStatus(code = HttpStatus.OK)
     public ProductDto put(@PathVariable Long id, @RequestBody RequestDto request){
         return this.service.put(id, request);
+    }
+
+    @PatchMapping(value = "/{id}")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.OK)
+    public ProductDto patchQuantity(@PathVariable Long id, @RequestParam("quantity") Integer quantity){
+        return this.service.patchQuantity(id, quantity);
     }
 }
