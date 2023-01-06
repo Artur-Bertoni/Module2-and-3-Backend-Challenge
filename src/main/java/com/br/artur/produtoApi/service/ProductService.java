@@ -104,8 +104,7 @@ public class ProductService {
         productEntity.setQuantity(product.getQuantity());
     }
 
-    //TODO continuar implementando patchQuantity (requisição -> service -> fila -> consumer (lê header e executa o q tá pedindo)
-    public ProductDto patchQuantity(Long id, Integer quantity) {
+    public String patchQuantity(Long id, Integer quantity) {
         try{
             Optional<Product> opt = repository.findById(id);
 
@@ -117,7 +116,7 @@ public class ProductService {
 
             rabbitMqService.sendMessage(RabbitMqConfig.exchangeName,RabbitMqConfig.routingKey,ProductConvert.toDto(productEntity),"PRODUCT_CHANGE");
 
-            return ProductConvert.toDto(this.repository.save(productEntity));
+            return "Alteração no produto: \n'"+productEntity+"'\n Enviada para a fila";
         } catch (EntityNotFoundException e){
             throw new ResourceNotFoundException(id);
         } catch (JsonProcessingException e) {
