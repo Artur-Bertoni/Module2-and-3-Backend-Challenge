@@ -115,7 +115,7 @@ public class ProductService {
             Product productEntity = opt.get();
             productEntity.setQuantity(quantity);
 
-            rabbitMqService.sendMessage(RabbitMqConfig.exchangeName,RabbitMqConfig.routingKey,ProductConvert.toDto(productEntity));
+            rabbitMqService.sendMessage(RabbitMqConfig.exchangeName,RabbitMqConfig.routingKey,ProductConvert.toDto(productEntity),"PRODUCT_CHANGE");
 
             return ProductConvert.toDto(this.repository.save(productEntity));
         } catch (EntityNotFoundException e){

@@ -16,5 +16,6 @@ public class ProductConsumer {
         var product = message.getPayload();
         var productHeader = message.getHeaders().get("EVENT");
         log.info("Message Body: "+product);
+        log.info("Message header: "+productHeader);
     }
 }
