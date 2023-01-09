@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -41,14 +42,11 @@ public class ProductService {
 
     public ProductDto post(RequestDto request){
         request.setQuantity(request.getQuantity() == null ? 0 : request.getQuantity());
-        request.setBarCode(request.getBarCode()+request.getQuantity());
+        request.setBarCode(request.getBarCode().concat(String.valueOf(request.getQuantity())));
 
-        request.getGrossAmount().setScale(2, BigDecimal.ROUND_HALF_EVEN);
-        request.getTaxes().setScale(2,BigDecimal.ROUND_HALF_EVEN);
+        request.setGrossAmount(request.getGrossAmount().setScale(2, RoundingMode.HALF_EVEN));
+        request.setTaxes(request.getTaxes().setScale(2, RoundingMode.HALF_EVEN));
         request.setPrice(priceCalculator(request.getGrossAmount(),request.getTaxes()));
-
-        System.out.println(ProductConvert.toEntity(request));
-        System.out.println(repository.save(ProductConvert.toEntity(request)));
 
         return ProductConvert.toDto(this.repository.save(ProductConvert.toEntity(request)));
     }

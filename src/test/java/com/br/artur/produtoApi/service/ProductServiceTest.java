@@ -9,11 +9,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.internal.matchers.Null;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Optional;
+
+import static com.br.artur.produtoApi.service.ProductService.priceCalculator;
 
 @ExtendWith(SpringExtension.class)
 public class ProductServiceTest {
@@ -27,9 +29,18 @@ public class ProductServiceTest {
     @Test
     void insertTest() {
         var request = ProductCreator.fakerRequest();
-        var productSave = ProductConvert.toEntity(request);
+        var productEntity = ProductConvert.toEntity(request);
 
-        Mockito.when(repository.save(productSave)).thenReturn(productSave);
+        var produtoSalvo = productEntity;
+
+        produtoSalvo.setQuantity(request.getQuantity() == null ? 0 : request.getQuantity());
+        produtoSalvo.setBarCode(request.getBarCode().concat(String.valueOf(request.getQuantity())));
+
+        produtoSalvo.setGrossAmount(request.getGrossAmount().setScale(2, RoundingMode.HALF_EVEN));
+        produtoSalvo.setTaxes(request.getTaxes().setScale(2, RoundingMode.HALF_EVEN));
+        produtoSalvo.setPrice(priceCalculator(request.getGrossAmount(),request.getTaxes()));
+
+        Mockito.when(repository.save(productEntity)).thenReturn(produtoSalvo.withId(1L));
         var response = service.post(request);
 
         Assertions.assertNotNull(response);
@@ -87,5 +98,21 @@ public class ProductServiceTest {
         Assertions.assertEquals(response.getCode(), request.getCode());
         Assertions.assertEquals(response.getName(), request.getName());
         Assertions.assertEquals(response.getDescription(), request.getDescription());
+    }
+
+    @Test
+    void patchQuantityTest() {
+        var request = ProductCreator.fakerRequest();
+        var productSave = ProductConvert.toEntity(request).withId(1L);
+
+        Mockito.when(repository.findById(1L)).thenReturn(Optional.of(productSave));
+        Mockito.when(repository.save(productSave)).thenReturn(productSave);
+
+        var stringResponse = service.patchQuantity(1L, 400);
+        var response = repository.getById(1L);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(response.getCode(), request.getCode());
+        Assertions.assertEquals(response.getQuantity(), request.getQuantity());
     }
 }

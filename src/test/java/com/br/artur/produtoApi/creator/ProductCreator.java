@@ -30,19 +30,15 @@ public class ProductCreator {
     public static RequestDto fakerRequest() {
         Faker faker = new Faker();
 
-        BigDecimal grossAmount = new BigDecimal(faker.commerce().price().replace(",", ".")),
-                   taxes = new BigDecimal(faker.number().randomDigitNotZero());
-
         return RequestDto.builder()
                 .barCode(String.valueOf(faker.number().randomNumber()))
                 .color(faker.commerce().color())
                 .code(RandomStringUtils.randomAlphanumeric(8).toLowerCase())
                 .description(faker.food().ingredient())
                 .name(faker.commerce().productName())
-                .price(ProductService.priceCalculator(grossAmount,taxes))
                 .expirationDate(Instant.now())
-                .grossAmount(grossAmount)
-                .taxes(taxes)
+                .grossAmount(new BigDecimal(faker.commerce().price().replace(",", ".")))
+                .taxes(new BigDecimal(faker.number().randomDigitNotZero()))
                 .series(faker.number().randomDigitNotZero()+"/2023")
                 .material(faker.commerce().material())
                 .quantity(faker.number().randomDigitNotZero())
