@@ -1,8 +1,10 @@
 package com.br.artur.produtoApi.service;
 
+import com.br.artur.produtoApi.config.RabbitMqConfig;
 import com.br.artur.produtoApi.convert.ProductConvert;
 import com.br.artur.produtoApi.creator.ProductCreator;
 import com.br.artur.produtoApi.repository.ProductRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,21 +28,24 @@ public class ProductServiceTest {
     @Mock
     private ProductRepository repository;
 
+    @Mock
+    private RabbitMqService rabbitMqService;
+
     @Test
     void insertTest() {
         var request = ProductCreator.fakerRequest();
         var productEntity = ProductConvert.toEntity(request);
 
-        var produtoSalvo = productEntity;
+        var savedProduct = productEntity;
 
-        produtoSalvo.setQuantity(request.getQuantity() == null ? 0 : request.getQuantity());
-        produtoSalvo.setBarCode(request.getBarCode().concat(String.valueOf(request.getQuantity())));
+        savedProduct.setQuantity(request.getQuantity() == null ? 0 : request.getQuantity());
+        savedProduct.setBarCode(request.getBarCode().concat(String.valueOf(request.getQuantity())));
 
-        produtoSalvo.setGrossAmount(request.getGrossAmount().setScale(2, RoundingMode.HALF_EVEN));
-        produtoSalvo.setTaxes(request.getTaxes().setScale(2, RoundingMode.HALF_EVEN));
-        produtoSalvo.setPrice(priceCalculator(request.getGrossAmount(),request.getTaxes()));
+        savedProduct.setGrossAmount(request.getGrossAmount().setScale(2, RoundingMode.HALF_EVEN));
+        savedProduct.setTaxes(request.getTaxes().setScale(2, RoundingMode.HALF_EVEN));
+        savedProduct.setPrice(priceCalculator(request.getGrossAmount(),request.getTaxes()));
 
-        Mockito.when(repository.save(productEntity)).thenReturn(produtoSalvo.withId(1L));
+        Mockito.when(repository.save(productEntity)).thenReturn(savedProduct.withId(1L));
         var response = service.post(request);
 
         Assertions.assertNotNull(response);
@@ -101,18 +106,16 @@ public class ProductServiceTest {
     }
 
     @Test
-    void patchQuantityTest() {
+    void patchQuantityTest() throws JsonProcessingException {
         var request = ProductCreator.fakerRequest();
         var productSave = ProductConvert.toEntity(request).withId(1L);
 
         Mockito.when(repository.findById(1L)).thenReturn(Optional.of(productSave));
-        Mockito.when(repository.save(productSave)).thenReturn(productSave);
+        Mockito.doNothing().when(rabbitMqService).sendMessage(RabbitMqConfig.exchangeName,RabbitMqConfig.routingKey,ProductConvert.toDto(productSave),"PRODUCT_CHANGE");
 
         var stringResponse = service.patchQuantity(1L, 400);
-        var response = repository.getById(1L);
 
-        Assertions.assertNotNull(response);
-        Assertions.assertEquals(response.getCode(), request.getCode());
-        Assertions.assertEquals(response.getQuantity(), request.getQuantity());
+        Assertions.assertNotNull(stringResponse);
+        Assertions.assertEquals("Alteração no produto: \n'"+productSave+"'\n Enviada para a fila",stringResponse);
     }
 }

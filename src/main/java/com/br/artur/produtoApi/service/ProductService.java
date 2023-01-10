@@ -77,8 +77,8 @@ public class ProductService {
             }
             Product productEntity = opt.get();
 
-            request.getGrossAmount().setScale(2, BigDecimal.ROUND_HALF_EVEN);
-            request.getTaxes().setScale(2,BigDecimal.ROUND_HALF_EVEN);
+            request.getGrossAmount().setScale(2, RoundingMode.HALF_EVEN);
+            request.getTaxes().setScale(2, RoundingMode.HALF_EVEN);
 
             updateData(productEntity, ProductConvert.toEntity(request));
             return ProductConvert.toDto(this.repository.save(productEntity));
@@ -117,14 +117,13 @@ public class ProductService {
             return "Alteração no produto: \n'"+productEntity+"'\n Enviada para a fila";
         } catch (EntityNotFoundException e){
             throw new ResourceNotFoundException(id);
-        } catch (JsonProcessingException e) {
+        } catch (JsonProcessingException /*| NullPointerException*/ e) {
             throw new ProductServiceException(e.getMessage());
         }
     }
 
     public static BigDecimal priceCalculator(BigDecimal grossAmount, BigDecimal taxes){
         BigDecimal price = grossAmount.add((taxes.divide(BigDecimal.valueOf(100))).multiply(grossAmount));
-        price = price.add(price.multiply(BigDecimal.valueOf(0.45))).setScale(2,BigDecimal.ROUND_HALF_UP);
-        return price;
+        return price.add(price.multiply(BigDecimal.valueOf(0.45))).setScale(2, RoundingMode.HALF_UP);
     }
 }
