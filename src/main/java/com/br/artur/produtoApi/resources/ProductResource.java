@@ -2,7 +2,6 @@ package com.br.artur.produtoApi.resources;
 
 import com.br.artur.produtoApi.dto.ProductDto;
 import com.br.artur.produtoApi.dto.RequestDto;
-import com.br.artur.produtoApi.entity.Product;
 import com.br.artur.produtoApi.helper.CsvHelper;
 import com.br.artur.produtoApi.service.ProductService;
 import com.br.artur.produtoApi.service.exceptions.ProductServiceException;
@@ -12,7 +11,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -69,10 +67,10 @@ public class ProductResource {
         return this.service.put(id, request);
     }
 
-    @PatchMapping(value = "/{id}")
+    @PatchMapping(value = "/{code}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public String patchQuantity(@PathVariable Long id, @RequestParam("quantity") Integer quantity){
-        return this.service.patchQuantity(id, quantity);
+    public String patchQuantity(@PathVariable String code, @RequestParam("quantity") Integer quantity){
+        return this.service.patchQuantity(code, quantity);
     }
 }

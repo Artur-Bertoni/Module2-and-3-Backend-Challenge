@@ -102,9 +102,9 @@ public class ProductService {
         productEntity.setQuantity(product.getQuantity());
     }
 
-    public String patchQuantity(Long id, Integer quantity) {
+    public String patchQuantity(String code, Integer quantity) {
         try{
-            Optional<Product> opt = repository.findById(id);
+            Optional<Product> opt = repository.findByCode(code);
 
             if (opt.isEmpty()) {
                 throw new EntityNotFoundException("Produto não encontrado");
@@ -116,8 +116,9 @@ public class ProductService {
 
             return "Alteração no produto: \n'"+productEntity+"'\n Enviada para a fila";
         } catch (EntityNotFoundException e){
-            throw new ResourceNotFoundException(id);
-        } catch (JsonProcessingException /*| NullPointerException*/ e) {
+            e.printStackTrace();
+            throw new ResourceNotFoundException(code);
+        } catch (JsonProcessingException e) {
             throw new ProductServiceException(e.getMessage());
         }
     }

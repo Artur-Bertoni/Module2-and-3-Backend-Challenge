@@ -15,6 +15,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import static org.hamcrest.Matchers.containsString;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 public class ProductResourceTest {
@@ -28,7 +30,7 @@ public class ProductResourceTest {
     private String URL = "/products";
 
     @Test
-    void findAllTest() throws Exception{
+    void getAllTest() throws Exception{
         ResultActions result = mockMvc
                 .perform(MockMvcRequestBuilders.get(URL)
                 .contentType(MediaType.APPLICATION_JSON));
@@ -40,7 +42,7 @@ public class ProductResourceTest {
     }
 
     @Test
-    void findByIdTest() throws Exception{
+    void getByIdTest() throws Exception{
         ResultActions result = mockMvc
                 .perform(MockMvcRequestBuilders.get(URL.concat("/{id}"),1)
                 .contentType(MediaType.APPLICATION_JSON));
@@ -52,7 +54,7 @@ public class ProductResourceTest {
     }
 
     @Test
-    void insertTest() throws Exception{
+    void postTest() throws Exception{
         RequestDto request = ProductCreator.createRequest();
         String jsonBody = objectMapper.writeValueAsString(request);
         ResultActions result = mockMvc
@@ -80,7 +82,7 @@ public class ProductResourceTest {
     }
 
     @Test
-    void insertFakerTest() throws Exception{
+    void postFakerTest() throws Exception{
         RequestDto request = ProductCreator.fakerRequest();
         String jsonBody = objectMapper.writeValueAsString(request);
         ResultActions result = mockMvc
@@ -141,5 +143,17 @@ public class ProductResourceTest {
 
         result.andDo(MockMvcResultHandlers.print());
         result.andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+    }
+
+    @Test
+    void patchQuantityTest() throws Exception {
+        ResultActions result = mockMvc
+                .perform(MockMvcRequestBuilders.patch(URL.concat("/{code}"),"21h437s")
+                .param("quantity","300"));
+
+        result.andDo(MockMvcResultHandlers.print());
+        result.andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+        result.andExpect(MockMvcResultMatchers.content().string(containsString("quantity=300")));
+        result.andExpect(MockMvcResultMatchers.content().string(containsString("Enviada para a fila")));
     }
 }

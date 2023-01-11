@@ -110,10 +110,10 @@ public class ProductServiceTest {
         var request = ProductCreator.fakerRequest();
         var productSave = ProductConvert.toEntity(request).withId(1L);
 
-        Mockito.when(repository.findById(1L)).thenReturn(Optional.of(productSave));
+        Mockito.when(repository.findByCode(productSave.getCode())).thenReturn(Optional.of(productSave));
         Mockito.doNothing().when(rabbitMqService).sendMessage(RabbitMqConfig.exchangeName,RabbitMqConfig.routingKey,ProductConvert.toDto(productSave),"PRODUCT_CHANGE");
 
-        var stringResponse = service.patchQuantity(1L, 400);
+        var stringResponse = service.patchQuantity(productSave.getCode(), 400);
 
         Assertions.assertNotNull(stringResponse);
         Assertions.assertEquals("Alteração no produto: \n'"+productSave+"'\n Enviada para a fila",stringResponse);
