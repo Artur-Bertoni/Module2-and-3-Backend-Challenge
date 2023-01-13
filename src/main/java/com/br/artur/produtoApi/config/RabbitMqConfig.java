@@ -17,12 +17,12 @@ public class RabbitMqConfig {
     }
 
     @Bean
-    public Binding binding(Queue queue, DirectExchange directExchange){
-        return BindingBuilder.bind(queue).to(directExchange).with(routingKey);
+    public Queue productQueue(){
+        return QueueBuilder.durable(queueName).build();
     }
 
     @Bean
-    public Queue productQueue(){
-        return QueueBuilder.durable(queueName).build();
+    public Binding binding(Queue queue, DirectExchange directExchange) {
+        return BindingBuilder.bind(queue).to(directExchange).with(routingKey);
     }
 }

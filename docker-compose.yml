@@ -12,8 +12,12 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=12022004
       - SPRING_PROFILES_ACTIVE=dev
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=12022004
+      - RABBITMQ_DEFAULT_HOST=rabbitmq
     depends_on:
       - db_products_api
+      - rabbitmq
 
   db_products_api:
     container_name: postgres

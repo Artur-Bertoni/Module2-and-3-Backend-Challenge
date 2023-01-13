@@ -8,7 +8,7 @@ spring:
       max-request-size: 2MB
 
   rabbitmq:
-    host: localhost
+    host: ${RABBITMQ_DEFAULT_HOST:localhost}
     port: 5672
     username: ${RABBITMQ_DEFAULT_USER:admin}
     password: ${RABBITMQ_DEFAULT_PASS:12022004}
