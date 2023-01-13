@@ -1,0 +1,15 @@
+spring:
+  jpa:
+    open-in-view: true
+
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 2MB
+
+  rabbitmq:
+    host: ${RABBITMQ_DEFAULT_HOST:localhost}
+    port: 5672
+    username: ${RABBITMQ_DEFAULT_USER:admin}
+    password: ${RABBITMQ_DEFAULT_PASS:12022004}
+    virtual-host: /
