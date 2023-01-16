@@ -8,7 +8,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - URL_POSTGRES=jdbc:postgresql://db_products_api:5432/produto-api
+      - URL_POSTGRES=jdbc:postgresql://postgres:5432/produto-api
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=12022004
       - SPRING_PROFILES_ACTIVE=dev
@@ -16,10 +16,10 @@ services:
       - RABBITMQ_DEFAULT_PASS=12022004
       - RABBITMQ_DEFAULT_HOST=rabbitmq
     depends_on:
-      - db_products_api
+      - postgres
       - rabbitmq
 
-  db_products_api:
+  postgres:
     container_name: postgres
     image: postgres
     restart: always
@@ -42,3 +42,19 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=admin
       - RABBITMQ_DEFAULT_PASS=12022004
+
+  producer:
+    container_name: producer
+    image: arturbertoni/producer:v1
+    restart: always
+    ports:
+      - "8081:8080"
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=12022004
+      - RABBITMQ_DEFAULT_HOST=rabbitmq
+      - PRODUTO_API_URL=produto-api
+      - PRODUTO_API_PORT=8080
+    depends_on:
+      - products_api
+      - rabbitmq

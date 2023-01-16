@@ -38,6 +38,8 @@ public class ProductConsumer {
         switch (Objects.requireNonNull(messageHeader).toString()) {
             case "PRODUCT_CHANGE":
                 ProductConvert.toDto(this.repository.save(product));
+            case "GET_ALL":
+
         }
     }
 }
