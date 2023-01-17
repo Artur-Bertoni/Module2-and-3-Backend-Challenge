@@ -69,8 +69,8 @@ public class ProductResource {
     @PutMapping(value = "/{id}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public ProductDto put(@PathVariable Long id, @RequestBody RequestDto request){
-        return this.service.put(id, request);
+    public ProductDto update(@PathVariable Long id, @RequestBody RequestDto request){
+        return this.service.update(id, request);
     }
 
     @PatchMapping(value = "/{code}")

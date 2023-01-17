@@ -38,14 +38,11 @@ public class ProductConsumer {
 
         switch (Objects.requireNonNull(messageHeader).toString()) {
             case "PRODUCT_CHANGE":
-                this.repository.save(product);
-                break;
             case "PRODUCT_POST":
+            case "PRODUCT_UPDATE":
                 this.repository.save(product);
                 break;
             case "PRODUCT_POST_BY_CSV":
-                break;
-            case "PRODUCT_PUT":
                 break;
             case "PRODUCT_DELETE":
                 this.repository.deleteById(product.getId());

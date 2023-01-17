@@ -22,7 +22,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -103,41 +102,47 @@ public class ProductService {
             throw new ResourceNotFoundException(id);
         }
     }
-/*
-    public String put(Long id, RequestDto request){
-        try{
-            Optional<Product> opt = repository.findById(id);
 
-            if (opt.isEmpty()) {
+    public String update(Long id, RequestDto request){
+        try{
+            ProductDto productDto = getById(id);
+
+            if (productDto == null) {
                 throw new ResourceNotFoundException("Produto não encontrado");
             }
-            Product productEntity = opt.get();
 
             request.getGrossAmount().setScale(2, RoundingMode.HALF_EVEN);
             request.getTaxes().setScale(2, RoundingMode.HALF_EVEN);
 
-            updateData(productEntity, ProductConvert.toEntity(request));
-            return ProductConvert.toDto(this.repository.save(productEntity));
+            updateData(productDto, ProductConvert.toEntity(request));
+
+            try{
+                rabbitMqService.sendMessage(RabbitMqConfig.exchangeName,RabbitMqConfig.routingKey,productDto,"PRODUCT_UPDATE");
+            } catch (JsonProcessingException e) {
+                throw new ProductServiceException(e.getMessage());
+            }
+
+            return "UPDATE do produto: \n'"+request+"'\n Enviada para a fila";
         } catch (ResourceNotFoundException e){
             throw new ResourceNotFoundException(id);
         }
     }
 
-    private void updateData(Product productEntity, Product product) {
-        productEntity.setCategory(product.getCategory());
-        productEntity.setDescription(product.getDescription());
-        productEntity.setColor(product.getColor());
-        productEntity.setExpirationDate(product.getExpirationDate());
-        productEntity.setName(product.getName());
-        productEntity.setMaterial(product.getMaterial());
-        productEntity.setPrice(product.getPrice());
-        productEntity.setSeries(product.getSeries());
-        productEntity.setGrossAmount(product.getGrossAmount());
-        productEntity.setManufacturingDate(product.getManufacturingDate());
-        productEntity.setTaxes(product.getTaxes());
-        productEntity.setQuantity(product.getQuantity());
+    private void updateData(ProductDto productDto, Product product) {
+        productDto.setCategory(product.getCategory());
+        productDto.setDescription(product.getDescription());
+        productDto.setColor(product.getColor());
+        productDto.setExpirationDate(product.getExpirationDate());
+        productDto.setName(product.getName());
+        productDto.setMaterial(product.getMaterial());
+        productDto.setPrice(product.getPrice());
+        productDto.setSeries(product.getSeries());
+        productDto.setGrossAmount(product.getGrossAmount());
+        productDto.setManufacturingDate(product.getManufacturingDate());
+        productDto.setTaxes(product.getTaxes());
+        productDto.setQuantity(product.getQuantity());
     }
-*/
+
     public String patchQuantity(String code, Integer quantity) {
         try{
             Product product = restTemplate.getForObject(config.getUrl().concat("/code/{code}"), Product.class, code);

@@ -75,7 +75,7 @@ public class ProductService {
         }
     }
 
-    public ProductDto put(Long id, RequestDto request){
+    public ProductDto update(Long id, RequestDto request){
         try{
             Optional<Product> opt = repository.findById(id);
 

@@ -97,7 +97,7 @@ public class ProductServiceTest {
         Mockito.when(repository.findById(1L)).thenReturn(Optional.of(productSave));
         Mockito.when(repository.save(productSave)).thenReturn(productSave);
 
-        var response = service.put(1L, request);
+        var response = service.update(1L, request);
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(response.getCode(), request.getCode());

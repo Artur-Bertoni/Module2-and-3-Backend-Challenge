@@ -56,14 +56,14 @@ public class ProductResource {
     public void delete(@PathVariable Long id) {
         this.service.delete(id);
     }
-/*
+
     @PutMapping(value = "/{id}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public String put(@PathVariable Long id, @RequestBody RequestDto request){
-        return this.service.put(id, request);
+    public String update(@PathVariable Long id, @RequestBody RequestDto request){
+        return this.service.update(id, request);
     }
-*/
+
     @PatchMapping(value = "/{code}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
