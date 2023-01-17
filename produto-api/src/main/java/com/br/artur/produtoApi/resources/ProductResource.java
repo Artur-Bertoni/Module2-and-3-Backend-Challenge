@@ -32,6 +32,12 @@ public class ProductResource {
         return this.service.getById(id);
     }
 
+    @GetMapping(value = "/code/{code}")
+    @ResponseBody
+    public ProductDto getByCode(@PathVariable String code){
+        return this.service.getByCode(code);
+    }
+
     @PostMapping
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)

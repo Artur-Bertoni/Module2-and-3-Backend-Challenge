@@ -16,7 +16,7 @@ public class RestTemplateConfig {
     @Value("${url.port}")
     private String port;
 
-    public String url(){
+    public String getUrl(){
         return "http://".concat(url).concat(":").concat(port).concat("/products");
     }
 

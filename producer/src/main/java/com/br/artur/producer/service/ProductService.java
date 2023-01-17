@@ -4,13 +4,13 @@ import com.br.artur.producer.config.RabbitMqConfig;
 import com.br.artur.producer.config.RestTemplateConfig;
 import com.br.artur.producer.convert.ProductConvert;
 import com.br.artur.producer.dto.ProductDto;
+import com.br.artur.producer.dto.RequestDto;
 import com.br.artur.producer.entity.Product;
 import com.br.artur.producer.service.exceptions.ProductServiceException;
 import com.br.artur.producer.service.exceptions.ResourceNotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -37,19 +37,19 @@ public class ProductService {
     private RestTemplateConfig config;
 
     public List<ProductDto> getAll(){
-
-        log.info("url:{}",config.url());
-
-        ResponseEntity<List<Product>> productList = restTemplate.exchange(config.url(), HttpMethod.GET, null,
-                new ParameterizedTypeReference<List<Product>>() {});
+        ResponseEntity<List<Product>> productList = restTemplate.exchange(config.getUrl(), HttpMethod.GET, null,
+                new ParameterizedTypeReference<>() {});
 
         return Objects.requireNonNull(productList.getBody()).stream().map(ProductConvert::toDto).collect(Collectors.toList());
     }
-/*
-    public String getById(Long id){
-        return repository.findById(id).map(ProductConvert::toDto).orElse(ProductDto.builder().build());
-    }
 
+    public ProductDto getById(Long id){
+        ResponseEntity<Product> product = restTemplate.exchange(config.getUrl().concat("/").concat(String.valueOf(id)), HttpMethod.GET, null,
+                new ParameterizedTypeReference<>() {});
+
+        return ProductConvert.toDto(Objects.requireNonNull(product.getBody()));
+    }
+/*
     public String post(RequestDto request){
         request.setQuantity(request.getQuantity() == null ? 0 : request.getQuantity());
         request.setBarCode(request.getBarCode().concat(String.valueOf(request.getQuantity())));
@@ -58,9 +58,15 @@ public class ProductService {
         request.setTaxes(request.getTaxes().setScale(2, RoundingMode.HALF_EVEN));
         request.setPrice(priceCalculator(request.getGrossAmount(),request.getTaxes()));
 
-        return ProductConvert.toDto(this.repository.save(ProductConvert.toEntity(request)));
-    }
+        try{
+            rabbitMqService.sendMessage(RabbitMqConfig.exchangeName,RabbitMqConfig.routingKey,ProductConvert.toDto(ProductConvert.toEntity(request)),"PRODUCT_POST");
+        } catch (JsonProcessingException e) {
+            throw new ProductServiceException(e.getMessage());
+        }
 
+        return "POST do produto: \n'"+request+"'\n Enviada para a fila";
+    }
+/*
     public String postByCsv(MultipartFile file) {
         try {
             List<Product> products = CsvHelper.toProductList(file.getInputStream());
@@ -111,17 +117,17 @@ public class ProductService {
 */
     public String patchQuantity(String code, Integer quantity) {
         try{
-            ProductDto productDto = restTemplate.getForObject("/{code}", ProductDto.class, code);
+            Product product = restTemplate.getForObject(config.getUrl().concat("/code/{code}"), Product.class, code);
 
-            if (productDto == null) {
+            if (product == null) {
                 throw new ResourceNotFoundException("Produto não encontrado");
             }
 
-            productDto.setQuantity(quantity);
+            product.setQuantity(quantity);
 
-            rabbitMqService.sendMessage(RabbitMqConfig.exchangeName,RabbitMqConfig.routingKey,productDto,"PRODUCT_CHANGE");
+            rabbitMqService.sendMessage(RabbitMqConfig.exchangeName,RabbitMqConfig.routingKey,ProductConvert.toDto(product),"PRODUCT_CHANGE");
 
-            return "Alteração de quantidade no produto: \n'"+productDto+"'\n Enviada para a fila";
+            return "Alteração de quantidade no produto: \n'"+product+"'\n Enviada para a fila";
         } catch (ResourceNotFoundException e){
             throw new ResourceNotFoundException(code);
         } catch (JsonProcessingException e) {

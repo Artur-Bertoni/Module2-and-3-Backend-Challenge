@@ -40,6 +40,10 @@ public class ProductService {
         return repository.findById(id).map(ProductConvert::toDto).orElse(ProductDto.builder().build());
     }
 
+    public ProductDto getByCode(String code) {
+        return repository.findByCode(code).map(ProductConvert::toDto).orElse(ProductDto.builder().build());
+    }
+
     public ProductDto post(RequestDto request){
         request.setQuantity(request.getQuantity() == null ? 0 : request.getQuantity());
         request.setBarCode(request.getBarCode().concat(String.valueOf(request.getQuantity())));

@@ -1,6 +1,7 @@
 package com.br.artur.producer.resources;
 
 import com.br.artur.producer.dto.ProductDto;
+import com.br.artur.producer.dto.RequestDto;
 import com.br.artur.producer.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,20 +22,20 @@ public class ProductResource {
     public List<ProductDto> getAll(){
         return this.service.getAll();
     }
-/*
+
     @GetMapping(value = "/{id}")
     @ResponseBody
     public ProductDto getById(@PathVariable Long id){
         return this.service.getById(id);
     }
-
+/*
     @PostMapping
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
-    public ProductDto post(@RequestBody RequestDto request) {
+    public String post(@RequestBody RequestDto request) {
         return this.service.post(request);
     }
-
+/*
     @PostMapping("/upload")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
