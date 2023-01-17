@@ -10,6 +10,7 @@ import com.br.artur.producer.service.exceptions.ProductServiceException;
 import com.br.artur.producer.service.exceptions.ResourceNotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -49,8 +50,10 @@ public class ProductService {
 
         return ProductConvert.toDto(Objects.requireNonNull(product.getBody()));
     }
-/*
+
     public String post(RequestDto request){
+        request.setCode(request.getCode() == null ? RandomStringUtils.randomAlphanumeric(8).toLowerCase() : request.getCode());
+
         request.setQuantity(request.getQuantity() == null ? 0 : request.getQuantity());
         request.setBarCode(request.getBarCode().concat(String.valueOf(request.getQuantity())));
 

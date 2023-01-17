@@ -28,7 +28,7 @@ public class ProductResource {
     public ProductDto getById(@PathVariable Long id){
         return this.service.getById(id);
     }
-/*
+
     @PostMapping
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)

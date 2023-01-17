@@ -32,14 +32,23 @@ public class ProductConsumer {
 
         var messageHeader = message.getHeaders().get("EVENT");
         var productBody = message.getPayload();
-        log.info("Receive message '"+messageHeader+"' from queue '"+RabbitMqConfig.queueName+"'");
+
+        log.info("Received message '"+messageHeader+"' from queue '"+RabbitMqConfig.queueName+"'");
         log.info("Message Body: "+productBody);
 
         switch (Objects.requireNonNull(messageHeader).toString()) {
             case "PRODUCT_CHANGE":
-                ProductConvert.toDto(this.repository.save(product));
-            case "GET_ALL":
-
+                this.repository.save(product);
+                break;
+            case "PRODUCT_POST":
+                this.repository.save(product);
+                break;
+            case "PRODUCT_POST_BY_CSV":
+                break;
+            case "PRODUCT_PUT":
+                break;
+            case "PRODUCT_DELETE":
+                break;
         }
     }
 }
