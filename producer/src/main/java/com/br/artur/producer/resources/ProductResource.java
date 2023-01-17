@@ -2,11 +2,14 @@ package com.br.artur.producer.resources;
 
 import com.br.artur.producer.dto.ProductDto;
 import com.br.artur.producer.dto.RequestDto;
+import com.br.artur.producer.helper.CsvHelper;
 import com.br.artur.producer.service.ProductService;
+import com.br.artur.producer.service.exceptions.ProductServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -35,11 +38,11 @@ public class ProductResource {
     public String post(@RequestBody RequestDto request) {
         return this.service.post(request);
     }
-/*
+
     @PostMapping("/upload")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
-    public List<ProductDto> postByCsv(@RequestParam("file") MultipartFile file) {
+    public String postByCsv(@RequestParam("file") MultipartFile file) {
         if (CsvHelper.isCsv(file)) {
             try {
                 return this.service.postByCsv(file);
@@ -49,7 +52,7 @@ public class ProductResource {
         }
         throw new ProductServiceException("Por favor, insira um arquivo válido");
     }
-*/
+
     @DeleteMapping(value = "/{id}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.NO_CONTENT)

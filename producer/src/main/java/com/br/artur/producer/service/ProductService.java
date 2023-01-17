@@ -6,6 +6,7 @@ import com.br.artur.producer.convert.ProductConvert;
 import com.br.artur.producer.dto.ProductDto;
 import com.br.artur.producer.dto.RequestDto;
 import com.br.artur.producer.entity.Product;
+import com.br.artur.producer.helper.CsvHelper;
 import com.br.artur.producer.service.exceptions.ProductServiceException;
 import com.br.artur.producer.service.exceptions.ResourceNotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -17,7 +18,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
@@ -77,16 +80,19 @@ public class ProductService {
 
         return "POST do produto: \n'"+request+"'\n Enviada para a fila";
     }
-/*
+
     public String postByCsv(MultipartFile file) {
         try {
             List<Product> products = CsvHelper.toProductList(file.getInputStream());
-            return repository.saveAll(products).stream().map(ProductConvert::toDto).collect(Collectors.toList());
+
+            rabbitMqService.sendMessageList(RabbitMqConfig.exchangeName,RabbitMqConfig.routingKey,products,"PRODUCT_POST_BY_CSV");
+
+            return "POST da lista de produtos: \n'"+products+"'\n Enviada para a fila";
         } catch (IOException | NullPointerException e) {
             throw new ProductServiceException("Erro ao armazenar os dados do arquivo: "+e.getMessage());
         }
     }
-*/
+
     public void delete(Long id) {
         try {
             ProductDto productDto = getById(id);
