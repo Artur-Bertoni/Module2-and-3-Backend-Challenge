@@ -16,8 +16,8 @@ public class RabbitMqService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public void sendMessage (String exchange, String routingKey, ProductDto productDto, String header) throws JsonProcessingException {
-        var jsonRequest = objectMapper.writeValueAsString(productDto);
+    public void sendMessage (String exchange, String routingKey, ProductDto body, String header) throws JsonProcessingException {
+        var jsonRequest = objectMapper.writeValueAsString(body);
         rabbitTemplate.convertAndSend(exchange,routingKey,jsonRequest, message -> {
             message.getMessageProperties().setHeader("EVENT",header);
             return message;});

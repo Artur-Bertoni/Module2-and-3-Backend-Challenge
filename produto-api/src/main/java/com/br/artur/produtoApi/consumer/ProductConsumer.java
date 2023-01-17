@@ -48,6 +48,7 @@ public class ProductConsumer {
             case "PRODUCT_PUT":
                 break;
             case "PRODUCT_DELETE":
+                this.repository.deleteById(product.getId());
                 break;
         }
     }

@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -45,10 +46,18 @@ public class ProductService {
     }
 
     public ProductDto getById(Long id){
-        ResponseEntity<Product> product = restTemplate.exchange(config.getUrl().concat("/").concat(String.valueOf(id)), HttpMethod.GET, null,
-                new ParameterizedTypeReference<>() {});
+        try{
+            ResponseEntity<Product> product = restTemplate.exchange(config.getUrl().concat("/").concat(String.valueOf(id)), HttpMethod.GET, null,
+                    new ParameterizedTypeReference<>() {});
 
-        return ProductConvert.toDto(Objects.requireNonNull(product.getBody()));
+            if (Objects.requireNonNull(product.getBody()).getId() == null){
+                throw new ResourceNotFoundException("Produto não encontrado");
+            }
+
+            return ProductConvert.toDto(Objects.requireNonNull(product.getBody()));
+        } catch (ResourceNotFoundException e){
+            throw new ResourceNotFoundException(id);
+        }
     }
 
     public String post(RequestDto request){
@@ -78,18 +87,29 @@ public class ProductService {
             throw new ProductServiceException("Erro ao armazenar os dados do arquivo: "+e.getMessage());
         }
     }
+*/
+    public void delete(Long id) {
+        try {
+            ProductDto productDto = getById(id);
 
-    public String delete(Long id) {
-        rabbitMqService.sendMessage(RabbitMqConfig.exchangeName,RabbitMqConfig.routingKey,id,"PRODUCT_CHANGE");
-        return "Deleção do produto de id '"+id+"' enviada para a fila";
+            if (productDto == null){
+                throw new ResourceNotFoundException("Produto não encontrado");
+            }
+
+            rabbitMqService.sendMessage(RabbitMqConfig.exchangeName,RabbitMqConfig.routingKey,productDto,"PRODUCT_DELETE");
+        } catch (JsonProcessingException e) {
+            throw new ProductServiceException(e.getMessage());
+        } catch (ResourceNotFoundException e){
+            throw new ResourceNotFoundException(id);
+        }
     }
-
+/*
     public String put(Long id, RequestDto request){
         try{
             Optional<Product> opt = repository.findById(id);
 
             if (opt.isEmpty()) {
-                throw new EntityNotFoundException("Produto não encontrado");
+                throw new ResourceNotFoundException("Produto não encontrado");
             }
             Product productEntity = opt.get();
 
@@ -98,7 +118,7 @@ public class ProductService {
 
             updateData(productEntity, ProductConvert.toEntity(request));
             return ProductConvert.toDto(this.repository.save(productEntity));
-        } catch (EntityNotFoundException e){
+        } catch (ResourceNotFoundException e){
             throw new ResourceNotFoundException(id);
         }
     }
@@ -130,7 +150,7 @@ public class ProductService {
 
             rabbitMqService.sendMessage(RabbitMqConfig.exchangeName,RabbitMqConfig.routingKey,ProductConvert.toDto(product),"PRODUCT_CHANGE");
 
-            return "Alteração de quantidade no produto: \n'"+product+"'\n Enviada para a fila";
+            return "PATCH de quantidade no produto: \n'"+product+"'\n Enviada para a fila";
         } catch (ResourceNotFoundException e){
             throw new ResourceNotFoundException(code);
         } catch (JsonProcessingException e) {

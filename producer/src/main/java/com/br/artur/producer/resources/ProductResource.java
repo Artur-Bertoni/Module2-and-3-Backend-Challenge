@@ -49,18 +49,18 @@ public class ProductResource {
         }
         throw new ProductServiceException("Por favor, insira um arquivo válido");
     }
-
+*/
     @DeleteMapping(value = "/{id}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         this.service.delete(id);
     }
-
+/*
     @PutMapping(value = "/{id}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public ProductDto put(@PathVariable Long id, @RequestBody RequestDto request){
+    public String put(@PathVariable Long id, @RequestBody RequestDto request){
         return this.service.put(id, request);
     }
 */
