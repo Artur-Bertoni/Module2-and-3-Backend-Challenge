@@ -62,7 +62,7 @@ public class ProductService {
         }
     }
 
-    public String post(RequestDto request){
+    public ProductDto post(RequestDto request){
         request.setCode(request.getCode() == null ? RandomStringUtils.randomAlphanumeric(8).toLowerCase() : request.getCode());
 
         request.setQuantity(request.getQuantity() == null ? 0 : request.getQuantity());
@@ -78,16 +78,16 @@ public class ProductService {
             throw new ProductServiceException(e.getMessage());
         }
 
-        return "POST do produto: \n'"+request+"'\n Enviada para a fila";
+        return ProductConvert.toDto(ProductConvert.toEntity(request));
     }
 
-    public String postByCsv(MultipartFile file) {
+    public List<ProductDto> postByCsv(MultipartFile file) {
         try {
             List<Product> products = CsvHelper.toProductList(file.getInputStream());
 
             rabbitMqService.sendMessageList(RabbitMqConfig.exchangeName,RabbitMqConfig.routingKey,products,"PRODUCT_POST_BY_CSV");
 
-            return "POST da lista de produtos: \n'"+products+"'\n Enviada para a fila";
+            return products.stream().map(ProductConvert::toDto).collect(Collectors.toList());
         } catch (IOException | NullPointerException e) {
             throw new ProductServiceException("Erro ao armazenar os dados do arquivo: "+e.getMessage());
         }
@@ -109,7 +109,7 @@ public class ProductService {
         }
     }
 
-    public String update(Long id, RequestDto request){
+    public ProductDto update(Long id, RequestDto request){
         try{
             ProductDto productDto = getById(id);
 
@@ -128,7 +128,7 @@ public class ProductService {
                 throw new ProductServiceException(e.getMessage());
             }
 
-            return "UPDATE do produto: \n'"+request+"'\n Enviada para a fila";
+            return productDto;
         } catch (ResourceNotFoundException e){
             throw new ResourceNotFoundException(id);
         }
@@ -147,9 +147,13 @@ public class ProductService {
         productDto.setManufacturingDate(product.getManufacturingDate());
         productDto.setTaxes(product.getTaxes());
         productDto.setQuantity(product.getQuantity());
+
+        productDto.setPrice(productDto.getPrice().setScale(2,RoundingMode.HALF_EVEN));
+        productDto.setTaxes(productDto.getTaxes().setScale(2,RoundingMode.HALF_EVEN));
+        productDto.setGrossAmount(productDto.getGrossAmount().setScale(2,RoundingMode.HALF_EVEN));
     }
 
-    public String patchQuantity(String code, Integer quantity) {
+    public ProductDto patchQuantity(String code, Integer quantity) {
         try{
             Product product = restTemplate.getForObject(config.getUrl().concat("/code/{code}"), Product.class, code);
 
@@ -161,7 +165,7 @@ public class ProductService {
 
             rabbitMqService.sendMessage(RabbitMqConfig.exchangeName,RabbitMqConfig.routingKey,ProductConvert.toDto(product),"PRODUCT_CHANGE");
 
-            return "PATCH de quantidade no produto: \n'"+product+"'\n Enviada para a fila";
+            return ProductConvert.toDto(product);
         } catch (ResourceNotFoundException e){
             throw new ResourceNotFoundException(code);
         } catch (JsonProcessingException e) {

@@ -35,14 +35,14 @@ public class ProductResource {
     @PostMapping
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
-    public String post(@RequestBody RequestDto request) {
+    public ProductDto post(@RequestBody RequestDto request) {
         return this.service.post(request);
     }
 
     @PostMapping("/upload")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.CREATED)
-    public String postByCsv(@RequestParam("file") MultipartFile file) {
+    public List<ProductDto> postByCsv(@RequestParam("file") MultipartFile file) {
         if (CsvHelper.isCsv(file)) {
             try {
                 return this.service.postByCsv(file);
@@ -63,14 +63,14 @@ public class ProductResource {
     @PutMapping(value = "/{id}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public String update(@PathVariable Long id, @RequestBody RequestDto request){
+    public ProductDto update(@PathVariable Long id, @RequestBody RequestDto request){
         return this.service.update(id, request);
     }
 
     @PatchMapping(value = "/{code}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public String patchQuantity(@PathVariable String code, @RequestParam("quantity") Integer quantity){
+    public ProductDto patchQuantity(@PathVariable String code, @RequestParam("quantity") Integer quantity){
         return this.service.patchQuantity(code, quantity);
     }
 }
