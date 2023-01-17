@@ -15,6 +15,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.math.RoundingMode;
+
 import static org.hamcrest.Matchers.containsString;
 
 @SpringBootTest
@@ -54,6 +56,18 @@ public class ProductResourceTest {
     }
 
     @Test
+    void getByCodeTest() throws Exception{
+        ResultActions result = mockMvc
+                .perform(MockMvcRequestBuilders.get(URL.concat("/code/{code}"),"21h437s")
+                        .contentType(MediaType.APPLICATION_JSON));
+
+        result.andDo(MockMvcResultHandlers.print());
+        result.andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.category").exists());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.category").value("FOOD"));
+    }
+
+    @Test
     void postTest() throws Exception{
         RequestDto request = ProductCreator.createRequest();
         String jsonBody = objectMapper.writeValueAsString(request);
@@ -72,8 +86,8 @@ public class ProductResourceTest {
         result.andExpect(MockMvcResultMatchers.jsonPath("$.color").value(request.getColor()));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.material").value(request.getMaterial()));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(request.getName()));
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.grossAmount").value(request.getGrossAmount()));
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.taxes").value(request.getTaxes()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.grossAmount").value(request.getGrossAmount().setScale(1, RoundingMode.HALF_EVEN)));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.taxes").value(request.getTaxes().setScale(1, RoundingMode.HALF_EVEN)));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.price").value(ProductService.priceCalculator(request.getGrossAmount(),request.getTaxes())));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.quantity").value(0));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.barCode").value(request.getBarCode()+0));
@@ -101,8 +115,8 @@ public class ProductResourceTest {
         result.andExpect(MockMvcResultMatchers.jsonPath("$.material").value(request.getMaterial()));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(request.getName()));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.grossAmount").value(request.getGrossAmount()));
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.taxes").value(request.getTaxes()));
-        result.andExpect(MockMvcResultMatchers.jsonPath("$.price").value(request.getPrice()));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.taxes").value(request.getTaxes().setScale(1, RoundingMode.HALF_EVEN)));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.price").value(ProductService.priceCalculator(request.getGrossAmount(),request.getTaxes())));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.quantity").value(request.getQuantity()));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.barCode").value(request.getBarCode()+request.getQuantity()));
         result.andExpect(MockMvcResultMatchers.jsonPath("$.manufacturingDate").value(request.getManufacturingDate().toString()));
