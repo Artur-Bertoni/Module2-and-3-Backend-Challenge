@@ -13,10 +13,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,9 +41,9 @@ public class ProductServiceTest {
     @Mock
     private RestTemplateConfig config;
 
-/*
+
     @Test
-    void postTest() {
+    void postTest() throws JsonProcessingException {
         var request = ProductCreator.fakerRequest();
         var productEntity = ProductConvert.toEntity(request);
 
@@ -52,25 +56,28 @@ public class ProductServiceTest {
         savedProduct.setTaxes(request.getTaxes().setScale(2, RoundingMode.HALF_EVEN));
         savedProduct.setPrice(priceCalculator(request.getGrossAmount(),request.getTaxes()));
 
-        Mockito.when(repository.save(productEntity)).thenReturn(savedProduct.withId(1L));
+        Mockito.doNothing().when(rabbitMqService).sendMessage(RabbitMqConfig.exchangeName,RabbitMqConfig.routingKey,ProductConvert.toDto(savedProduct),"PRODUCT_POST");
         var response = service.post(request);
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(response.getCode(), request.getCode());
     }
-
+/*
     @Test
     void getAllTest() {
         var request = ProductCreator.fakerRequest();
-        var productSave = ProductConvert.toEntity(request);
+        List<Product> productList = new ArrayList<>();
 
-        Mockito.when(repository.findAll()).thenReturn(List.of(productSave));
+        productList.add(ProductConvert.toEntity(request));
+
+        Mockito.when(restTemplate.exchange(config.getUrl(), HttpMethod.GET, null, new ParameterizedTypeReference<>() {}))
+                .thenReturn(productList);
         var response = service.getAll();
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(response.get(0).getCode(), request.getCode());
     }
-
+/*
     @Test
     void getByIdTest() {
         var request = ProductCreator.fakerRequest();
