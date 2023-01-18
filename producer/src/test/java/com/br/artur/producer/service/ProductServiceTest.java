@@ -4,15 +4,19 @@ import com.br.artur.producer.config.RabbitMqConfig;
 import com.br.artur.producer.config.RestTemplateConfig;
 import com.br.artur.producer.convert.ProductConvert;
 import com.br.artur.producer.creator.ProductCreator;
+import com.br.artur.producer.dto.ProductDto;
 import com.br.artur.producer.entity.Product;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +25,15 @@ import org.springframework.web.client.RestTemplate;
 
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static com.br.artur.producer.service.ProductService.priceCalculator;
+import static org.mockito.ArgumentMatchers.*;
 
-@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class ProductServiceTest {
 
     @InjectMocks
@@ -62,20 +69,21 @@ public class ProductServiceTest {
         Assertions.assertNotNull(response);
         Assertions.assertEquals(response.getCode(), request.getCode());
     }
-/*
+
     @Test
     void getAllTest() {
-        var request = ProductCreator.fakerRequest();
-        List<Product> productList = new ArrayList<>();
+        var response = ProductConvert.toEntity(ProductCreator.fakerRequest());
+        List<Product> list = Arrays.asList(response);
+        ResponseEntity<List<Product>> productList = ResponseEntity.of(Optional.of(list));
 
-        productList.add(ProductConvert.toEntity(request));
+        Mockito.when(config.getUrl()).thenReturn("http://localhost:8080/products");
+        Mockito.when(restTemplate.exchange(config.getUrl(), HttpMethod.GET, null,
+                new ParameterizedTypeReference<List<Product>>() {})).thenReturn(productList);
 
-        Mockito.when(restTemplate.exchange(config.getUrl(), HttpMethod.GET, null, new ParameterizedTypeReference<>() {}))
-                .thenReturn(productList);
-        var response = service.getAll();
+        var result = service.getAll();
 
-        Assertions.assertNotNull(response);
-        Assertions.assertEquals(response.get(0).getCode(), request.getCode());
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(result.get(0).getCode(), response.getCode());
     }
 /*
     @Test
@@ -89,7 +97,7 @@ public class ProductServiceTest {
         Assertions.assertNotNull(response);
         Assertions.assertEquals(response.getCode(), request.getCode());
     }
-
+/*
     @Test
     void getByCodeTest() {
         var request = ProductCreator.fakerRequest();
@@ -136,6 +144,7 @@ public class ProductServiceTest {
         var request = ProductCreator.fakerRequest();
         var productSave = ProductConvert.toEntity(request).withId(1L);
 
+        Mockito.when(config.getUrl()).thenReturn("http://localhost:8080/products");
         Mockito.when(restTemplate.getForObject(config.getUrl().concat("/code/{code}"), Product.class, productSave.getCode())).thenReturn(productSave);
         Mockito.doNothing().when(rabbitMqService).sendMessage(RabbitMqConfig.exchangeName,RabbitMqConfig.routingKey,ProductConvert.toDto(productSave),"PRODUCT_CHANGE");
 

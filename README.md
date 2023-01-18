@@ -6,6 +6,7 @@ O objetivo desse desafio era de alterar o [Desafio do Módulo 2](https://github.
 O contexto apresentado inicialmente para a criação da aplicação foi o de criar um aplicativo de uma loja simples, com as funções de adicionar, editar, excluir e importar (através de arquivos .csv) produtos.
 
 ## Orientações para o uso
+mvnw clean package
 - Para que o software funcione corretamente, certifique-se de que não há nenhuma aplicação rodando nas portas 8080, 8081, 5433, 5672 e 15672 do computador, pois serão rodadas nessas portas (respectivamente) a aplicação [produto-api](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/feature/desafio-3-bonus/produto-api), a aplicação [producer](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/feature/desafio-3-bonus/producer) a conexão com o banco de dados PostgreSql, a conexão com o RabbitMQ e por fim o console Web do RabbitMQ;
 - Caso o endpoint "/update" (para a função de importar um arquivo '.csv') não esteja funcionando, tente remover o arquivo e adicioná-lo novamente;
 - Para o funcionamento correto da aplicação [producer](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/feature/desafio-3-bonus/producer), certifique-se de que as aplicações das quais ela depende estão funcionando corretamente;

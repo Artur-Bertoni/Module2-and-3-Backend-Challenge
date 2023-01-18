@@ -4,6 +4,7 @@ services:
   products_api:
     container_name: produto-api
     image: arturbertoni/produto-api:v1
+    build: ./produto-api
     restart: always
     ports:
       - "8080:8080"
@@ -17,6 +18,23 @@ services:
       - RABBITMQ_DEFAULT_HOST=rabbitmq
     depends_on:
       - postgres
+      - rabbitmq
+
+  producer:
+    container_name: producer
+    image: arturbertoni/producer:v1
+    build: ./producer
+    restart: always
+    ports:
+      - "8081:8080"
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=12022004
+      - RABBITMQ_DEFAULT_HOST=rabbitmq
+      - PRODUTO_API_URL=produto-api
+      - PRODUTO_API_PORT=8080
+    depends_on:
+      - products_api
       - rabbitmq
 
   postgres:
@@ -42,19 +60,3 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=admin
       - RABBITMQ_DEFAULT_PASS=12022004
-
-  producer:
-    container_name: producer
-    image: arturbertoni/producer:v1
-    restart: always
-    ports:
-      - "8081:8080"
-    environment:
-      - RABBITMQ_DEFAULT_USER=admin
-      - RABBITMQ_DEFAULT_PASS=12022004
-      - RABBITMQ_DEFAULT_HOST=rabbitmq
-      - PRODUTO_API_URL=produto-api
-      - PRODUTO_API_PORT=8080
-    depends_on:
-      - products_api
-      - rabbitmq

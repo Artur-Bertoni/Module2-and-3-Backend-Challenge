@@ -42,7 +42,7 @@ public class ProductService {
 
     public List<ProductDto> getAll(){
         ResponseEntity<List<Product>> productList = restTemplate.exchange(config.getUrl(), HttpMethod.GET, null,
-                new ParameterizedTypeReference<>() {});
+                new ParameterizedTypeReference<List<Product>>() {});
 
         return Objects.requireNonNull(productList.getBody()).stream().map(ProductConvert::toDto).collect(Collectors.toList());
     }
