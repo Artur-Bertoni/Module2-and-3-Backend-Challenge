@@ -1,22 +1,22 @@
 {
 	"info": {
 		"_postman_id": "1e2d2fdf-6630-4426-b840-b8c4499ff8f5",
-		"name": "Product collection",
+		"name": "Produto-Api Collection",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "24228667"
 	},
 	"item": [
 		{
-			"name": "Create",
+			"name": "Post",
 			"item": [
 				{
-					"name": "Create product",
+					"name": "Post product",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"category\": \"Cat 1\",\r\n    \"series\": \"4/2017\",\r\n    \"description\": \"Mouse\",\r\n    \"color\": \"Azul\",\r\n    \"material\": \"plástico\",\r\n    \"name\": \"SNIPER PRO REDRAGON\",\r\n    \"grossAmount\": 200.00,\r\n    \"taxes\": 10.00,\r\n    \"price\": 330.00,\r\n    \"quantity\": 10,\r\n    \"barCode\": 323456789014,\r\n    \"manufacturingDate\": \"2022-11-20T03:00:00Z\",\r\n    \"expirationDate\": \"2022-10-03T03:00:00Z\"\r\n}",
+							"raw": "{\r\n    \"category\": \"Cat 3\",\r\n    \"series\": \"4/2017\",\r\n    \"description\": \"Mouse\",\r\n    \"color\": \"Azul\",\r\n    \"material\": \"plástico\",\r\n    \"name\": \"Mouse pad\",\r\n    \"grossAmount\": 200.00,\r\n    \"taxes\": 10.00,\r\n    \"barCode\": 323456789014,\r\n    \"manufacturingDate\": \"2022-11-20T03:00:00Z\",\r\n    \"expirationDate\": \"2022-10-03T03:00:00Z\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -37,7 +37,7 @@
 					"response": []
 				},
 				{
-					"name": "Insert by CSV",
+					"name": "Post by CSV",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -79,10 +79,10 @@
 			]
 		},
 		{
-			"name": "Research",
+			"name": "Get",
 			"item": [
 				{
-					"name": "Find product",
+					"name": "Get product",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -100,7 +100,7 @@
 					"response": []
 				},
 				{
-					"name": "Find Product by Id",
+					"name": "Get Product by Id",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -124,13 +124,13 @@
 			"name": "Update",
 			"item": [
 				{
-					"name": "Edit product",
+					"name": "Update product",
 					"request": {
 						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": 1,\r\n    \"code\": \"21g437tb\",\r\n    \"category\": \"Eletrodomésticos\",\r\n    \"series\": \"2/2022\",\r\n    \"description\": \"Geladeira\",\r\n    \"color\": \"Vermelho\",\r\n    \"material\": \"aço\",\r\n    \"name\": \"Geladeira Brastemp\",\r\n    \"grossAmount\": 2.00,\r\n    \"taxes\": 10.00,\r\n    \"price\": 2.02,\r\n    \"quantity\": 500,\r\n    \"barCode\": 123456789013,\r\n    \"manufacturingDate\": \"2022-12-12T14:33:52.928302Z\",\r\n    \"expirationDate\": \"2022-12-12T14:33:52.928302Z\"\r\n}",
+							"raw": "{\r\n    \"code\": \"21g437tb\",\r\n    \"category\": \"Eletrodomésticos\",\r\n    \"series\": \"2/2022\",\r\n    \"description\": \"Geladeira\",\r\n    \"color\": \"Vermelho\",\r\n    \"material\": \"aço\",\r\n    \"name\": \"Geladeira Brastemp\",\r\n    \"grossAmount\": 2.00,\r\n    \"taxes\": 10.00,\r\n    \"price\": 2.02,\r\n    \"quantity\": 500,\r\n    \"barCode\": 123456789013,\r\n    \"manufacturingDate\": \"2022-12-12T14:33:52.928302Z\",\r\n    \"expirationDate\": \"2022-12-12T14:33:52.928302Z\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -176,6 +176,45 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Patch",
+			"item": [
+				{
+					"name": "Patch Quantity",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/products/{{code}}?quantity=300",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
+								"{{code}}"
+							],
+							"query": [
+								{
+									"key": "quantity",
+									"value": "300"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
@@ -193,7 +232,7 @@
 			"script": {
 				"type": "text/javascript",
 				"exec": [
-					"if (pm.request.method == 'GET'){",
+					"if (pm.request.method == 'GET' || pm.request.method == 'PUT'){",
 					"    pm.test(\"Status code: 200\", function () {",
 					"        pm.response.to.have.status(200);",
 					"    });",
@@ -217,7 +256,7 @@
 					"    pm.test(\"Tempo de execução < 2 seg\", function () {",
 					"        pm.expect(pm.response.responseTime).to.be.below(2000);",
 					"    });",
-					"} else if (pm.request.method == 'PUT' || pm.request.method == 'DELETE'){",
+					"} else if (pm.request.method == 'DELETE'){",
 					"    pm.test(\"Status code: 204\", function () {",
 					"        pm.response.to.have.status(204);",
 					"    });",
@@ -234,6 +273,20 @@
 		{
 			"key": "id",
 			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "exchange",
+			"value": "ProductExchange"
+		},
+		{
+			"key": "routingKey",
+			"value": "toProductQueue",
+			"type": "string"
+		},
+		{
+			"key": "code",
+			"value": "21g437s",
 			"type": "string"
 		}
 	]
