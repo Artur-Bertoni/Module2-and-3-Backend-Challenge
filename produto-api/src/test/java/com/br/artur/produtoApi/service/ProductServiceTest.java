@@ -32,7 +32,7 @@ public class ProductServiceTest {
     private RabbitMqService rabbitMqService;
 
     @Test
-    void insertTest() {
+    void postTest() {
         var request = ProductCreator.fakerRequest();
         var productEntity = ProductConvert.toEntity(request);
 
@@ -53,7 +53,7 @@ public class ProductServiceTest {
     }
 
     @Test
-    void findAllTest() {
+    void getAllTest() {
         var request = ProductCreator.fakerRequest();
         var productSave = ProductConvert.toEntity(request);
 
@@ -65,12 +65,24 @@ public class ProductServiceTest {
     }
 
     @Test
-    void findByIdTest() {
+    void getByIdTest() {
         var request = ProductCreator.fakerRequest();
         var productSave = ProductConvert.toEntity(request).withId(1L);
 
         Mockito.when(repository.findById(1L)).thenReturn(Optional.of(productSave));
         var response = service.getById(1L);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(response.getCode(), request.getCode());
+    }
+
+    @Test
+    void getByCodeTest() {
+        var request = ProductCreator.fakerRequest();
+        var productSave = ProductConvert.toEntity(request).withId(1L);
+
+        Mockito.when(repository.findByCode("21h437s")).thenReturn(Optional.of(productSave));
+        var response = service.getByCode("21h437s");
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(response.getCode(), request.getCode());
@@ -97,7 +109,7 @@ public class ProductServiceTest {
         Mockito.when(repository.findById(1L)).thenReturn(Optional.of(productSave));
         Mockito.when(repository.save(productSave)).thenReturn(productSave);
 
-        var response = service.put(1L, request);
+        var response = service.update(1L, request);
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(response.getCode(), request.getCode());

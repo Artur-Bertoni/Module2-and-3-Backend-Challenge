@@ -1,10 +1,10 @@
-package com.br.artur.produtoApi.resources;
+package com.br.artur.producer.resources;
 
-import com.br.artur.produtoApi.dto.ProductDto;
-import com.br.artur.produtoApi.dto.RequestDto;
-import com.br.artur.produtoApi.helper.CsvHelper;
-import com.br.artur.produtoApi.service.ProductService;
-import com.br.artur.produtoApi.service.exceptions.ProductServiceException;
+import com.br.artur.producer.dto.ProductDto;
+import com.br.artur.producer.dto.RequestDto;
+import com.br.artur.producer.helper.CsvHelper;
+import com.br.artur.producer.service.ProductService;
+import com.br.artur.producer.service.exceptions.ProductServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,12 +30,6 @@ public class ProductResource {
     @ResponseBody
     public ProductDto getById(@PathVariable Long id){
         return this.service.getById(id);
-    }
-
-    @GetMapping(value = "/code/{code}")
-    @ResponseBody
-    public ProductDto getByCode(@PathVariable String code){
-        return this.service.getByCode(code);
     }
 
     @PostMapping
@@ -76,7 +70,7 @@ public class ProductResource {
     @PatchMapping(value = "/{code}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public String patchQuantity(@PathVariable String code, @RequestParam("quantity") Integer quantity){
+    public ProductDto patchQuantity(@PathVariable String code, @RequestParam("quantity") Integer quantity){
         return this.service.patchQuantity(code, quantity);
     }
 }

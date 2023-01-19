@@ -10,6 +10,7 @@ import com.br.artur.produtoApi.repository.ProductRepository;
 import com.br.artur.produtoApi.service.exceptions.ProductServiceException;
 import com.br.artur.produtoApi.service.exceptions.ResourceNotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,13 @@ public class ProductService {
         return repository.findById(id).map(ProductConvert::toDto).orElse(ProductDto.builder().build());
     }
 
+    public ProductDto getByCode(String code) {
+        return repository.findByCode(code).map(ProductConvert::toDto).orElse(ProductDto.builder().build());
+    }
+
     public ProductDto post(RequestDto request){
+        request.setCode(request.getCode() == null ? RandomStringUtils.randomAlphanumeric(8).toLowerCase() : request.getCode());
+
         request.setQuantity(request.getQuantity() == null ? 0 : request.getQuantity());
         request.setBarCode(request.getBarCode().concat(String.valueOf(request.getQuantity())));
 
@@ -68,7 +75,7 @@ public class ProductService {
         }
     }
 
-    public ProductDto put(Long id, RequestDto request){
+    public ProductDto update(Long id, RequestDto request){
         try{
             Optional<Product> opt = repository.findById(id);
 
