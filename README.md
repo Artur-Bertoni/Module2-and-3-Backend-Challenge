@@ -5,27 +5,29 @@ Desafio da trilha Impulsionar 2.0 - Backend
 O objetivo desse desafio era de alterar o [Desafio do Módulo 2](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/feature/desafio-2) para adicionar novas bibliotecas e conectividade com sistema de filas.  
 O contexto apresentado inicialmente para a criação da aplicação foi o de criar um aplicativo de uma loja simples, com as funções de adicionar, editar, excluir e importar (através de arquivos .csv) produtos.
 
-## Orientações para o uso
-### Inicialização da aplicação
+## Orientações da aplicação
+
+### Orientações de inicialização
 - O primeiro passo para iniciar a aplicação corretamente é construir um '.jar' para cada uma das aplicações através da função Package do Maven.
   - Para isso, basta abrir a pasta do projeto em um terminal (Windows PowerShell, Cmd) com 'cd C:/"Caminho para a pasta/produto-api"' e executar o comando './mvnw clean package', e repetir o processo para a pasta '/producer';
-- Com os '.jar' gerados, agora basta executar o [docker-compose](https://github.com/Artur-Bertoni/desafio-south-impulsionar/blob/feature/desafio-3-bonus/produto-api/docker-compose.yml), também através de um terminal, na pasta raiz que unifica os projetos ('[desafio-south-impulsionar]()') e rodar o comando 'docker-compose up -d'.
-mvnw clean package
-- Para que o software funcione corretamente, certifique-se de que não há nenhuma aplicação rodando nas portas 8080, 8081, 5433, 5672 e 15672 do computador, pois serão rodadas nessas portas (respectivamente) a aplicação [produto-api](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/feature/desafio-3-bonus/produto-api), a aplicação [producer](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/feature/desafio-3-bonus/producer) a conexão com o banco de dados PostgreSql, a conexão com o RabbitMQ e por fim o console Web do RabbitMQ;
-- Caso o endpoint "/update" (para a função de importar um arquivo '.csv') não esteja funcionando, tente remover o arquivo e adicioná-lo novamente;
-- Para o funcionamento correto da aplicação [producer](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/feature/desafio-3-bonus/producer), certifique-se de que as aplicações das quais ela depende estão funcionando corretamente;
-- Para a realização dos [testes integrados da aplicação producer](https://github.com/Artur-Bertoni/desafio-south-impulsionar/blob/feature/desafio-3-bonus/producer/src/test/java/com/br/artur/producer/resources/ProductResourceTest.java), todos os componentes presentes no [docker-compose](https://github.com/Artur-Bertoni/desafio-south-impulsionar/blob/feature/desafio-3-bonus/produto-api/docker-compose.yml) devem estar rodando;
-- A aplicação [produto-api](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/feature/desafio-3-bonus/produto-api) tem autonimia para rodar reparadamente da aplicação [producer](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/feature/desafio-3-bonus/producer), basta alterar o endpoint de 'http://localhost8081/products' para 'http://localhost8080/products';
-- Para a execução do a aplicação [produto-api](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/feature/desafio-3-bonus/produto-api) localmente (via H2), basta rodar o container do RabbitMQ e executar no profile 'local' na IDE, ele automaticamente utilizará as configurações descritas em [application-local.yml](https://github.com/Artur-Bertoni/desafio-south-impulsionar/blob/feature/desafio-3-bonus/produto-api/src/main/resources/application-local.yml).
+- Com os '.jar' gerados, agora basta executar o [docker-compose](https://github.com/Artur-Bertoni/desafio-south-impulsionar/blob/main/docker-compose.yml), também através de um terminal, na pasta raiz que unifica os projetos ('[desafio-south-impulsionar](https://github.com/Artur-Bertoni/desafio-south-impulsionar)') e rodar o comando 'docker-compose up -d'.
 
-### Documentação de API
-- Na pasta [Api-Documentation](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/feature/desafio-3-bonus/Api-Documentation) há dois arquivos '.html' que se tratam da documentação da API, o arquivo [Producer_Collecion_Documentation.html](https://github.com/Artur-Bertoni/desafio-south-impulsionar/blob/feature/desafio-3-bonus/Api-Documentation/Producer_Collecion_Documentation.html) tem a documentação dos endpoints da aplicação [poducer](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/feature/desafio-3-bonus/producer), executadas na porta 8081, já o arquivo [Produto-Api_Collecion_Documentation.html](https://github.com/Artur-Bertoni/desafio-south-impulsionar/blob/feature/desafio-3-bonus/Api-Documentation/Produto-Api_Collecion_Documentation.html) possui a documentação da aplicação [produto-api](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/feature/desafio-3-bonus/produto-api) isolada (porta 8080);
-- Na pasta [Postman Collections](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/feature/desafio-3-bonus/Api-Documentation/Postman%20Collections) estão às coleções exportadas diretamente do Postman, seguindo o mesmo padrão das documentações, sendo uma para cada aplicação;
-- Para rodar as coleções, primeiramente a aplicação deve estar rodando em sua totalidade nos devidos containers configurados no [docker-compose](https://github.com/Artur-Bertoni/desafio-south-impulsionar/blob/feature/desafio-3-bonus/produto-api/docker-compose.yml);
-- Se as coleções forem rodadas uma após a outra, ou a mesma múltiplas vezes, é provável que ocorrerá falha de asserts da segunda vez em diante, visto que alguns endpoints tentarão fazer alterações em produtos no banco que foram excluídos ou alterados pela execução anterior. Para obter os resultados perfeitos novamente sem alterar os valores das variáveis das coleções (como {{id}} por exemplo), basta reiniciar o [docker-compose](https://github.com/Artur-Bertoni/desafio-south-impulsionar/blob/feature/desafio-3-bonus/produto-api/docker-compose.yml) (reiniciando os dados no BD) e executar as coleções novamente.
+### Orientações para uso
+- Para que o software funcione corretamente, certifique-se de que não há nenhuma aplicação rodando nas portas 8080, 8081, 5433, 5672 e 15672 do computador, pois serão rodadas nessas portas (respectivamente) a aplicação [produto-api](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/main/produto-api), a aplicação [producer](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/main/producer) a conexão com o banco de dados PostgreSql, a conexão com o RabbitMQ e por fim o console Web do RabbitMQ;
+- Caso o endpoint "/update" (para a função de importar um arquivo '.csv') não esteja funcionando, tente remover o arquivo e adicioná-lo novamente;
+- Para o funcionamento correto da aplicação [producer](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/main/producer), certifique-se de que as aplicações das quais ela depende estão funcionando corretamente;
+- Para a realização dos [testes integrados da aplicação producer](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/main/producer/src/test/java/com/br/artur/producer/resources/ProductResourceTest.java), todos os componentes presentes no [docker-compose](https://github.com/Artur-Bertoni/desafio-south-impulsionar/blob/main/docker-compose.yml) devem estar rodando;
+- A aplicação [produto-api](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/main/produto-api) tem autonimia para rodar reparadamente da aplicação [producer](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/main/producer), basta alterar o endpoint de 'http://localhost8081/products' para 'http://localhost8080/products';
+- Para a execução do a aplicação [produto-api](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/main/produto-api) localmente (via H2), basta rodar o container do RabbitMQ e executar no profile 'local' na IDE, ele automaticamente utilizará as configurações descritas em [application-local.yml](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/main/produto-api/src/main/resources/application-local.yml).
+
+### Orientações sobre a documentação de API
+- Na pasta [Api-Documentation](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/main/Api-Documentation) há dois arquivos '.html' que se tratam da documentação da API, o arquivo [Producer_Collecion_Documentation.html](https://github.com/Artur-Bertoni/desafio-south-impulsionar/blob/main/Api-Documentation/Producer_Collecion_Documentation.html) tem a documentação dos endpoints da aplicação [poducer](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/main/producer), executadas na porta 8081, já o arquivo [Produto-Api_Collecion_Documentation.html](https://github.com/Artur-Bertoni/desafio-south-impulsionar/blob/main/Api-Documentation/Produto-Api_Collecion_Documentation.html) possui a documentação da aplicação [produto-api](https://github.com/Artur-Bertoni/desafio-south-impulsionar/blob/main/produto-api) isolada (porta 8080);
+- Na pasta [Postman Collections](https://github.com/Artur-Bertoni/desafio-south-impulsionar/blob/main/Api-Documentation/Postman%20Collections) estão às coleções exportadas diretamente do Postman, seguindo o mesmo padrão das documentações, sendo uma para cada aplicação;
+- Para rodar as coleções, primeiramente a aplicação deve estar rodando em sua totalidade nos devidos containers configurados no [docker-compose](https://github.com/Artur-Bertoni/desafio-south-impulsionar/blob/main/docker-compose.yml);
+- Se as coleções forem rodadas uma após a outra, ou a mesma múltiplas vezes, é provável que ocorrerá falha de asserts da segunda vez em diante, visto que alguns endpoints tentarão fazer alterações em produtos no banco que foram excluídos ou alterados pela execução anterior. Para obter os resultados perfeitos novamente sem alterar os valores das variáveis das coleções (como {{id}} por exemplo), basta reiniciar o [docker-compose](https://github.com/Artur-Bertoni/desafio-south-impulsionar/blob/main/docker-compose.yml) (reiniciando os dados no BD) e executar as coleções novamente.
 
 ## Dependências utilizadas
-### [Produto-Api](https://github.com/Artur-Bertoni/desafio-south-impulsionar/blob/feature/desafio-3-bonus/produto-api/pom.xml)
+### [Produto-Api](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/main/produto-api/pom.xml)
 - [Spring Boot](https://spring.io/projects/spring-boot) (org.springframework.boot) -> utilizando os artefatos [spring-boot-starter-data-jpa](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa), [spring-boot-starter-web](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web), [spring-boot-starter-test](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test), [spring-boot-starter-thymeleaf](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-thymeleaf), [spring-boot-devtools](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devtools) e [spring-boot-starter-amqp](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-amqp);
 - [Spring AMQP](https://docs.spring.io/spring-amqp/reference/html/) (org.springframework.amqp) -> utilizando o artefato [spring-rabbit-test](https://mvnrepository.com/artifact/org.springframework.amqp/spring-rabbit-test);
 - [Flyway](https://flywaydb.org) (org.flywaydb) -> utilizando o artefato [flyway-core](https://mvnrepository.com/artifact/org.flywaydb/flyway-core);
@@ -34,7 +36,7 @@ mvnw clean package
 - [Apache Commons](https://commons.apache.org) (org.apache.commons) -> utilizando os artefatos [commons-lang3](https://commons.apache.org/proper/commons-lang/) e [commons-csv](https://commons.apache.org/proper/commons-csv/);
 - [Lombok](https://projectlombok.org) (org.projectlombok) -> utilizando o artefato [lombok](https://projectlombok.org/setup/maven);
 - [JavaFaker](https://github.com/DiUS/java-faker) (com.github.javafaker) -> utilizando o artefato [javafaker](https://mvnrepository.com/artifact/com.github.javafaker/javafaker).
-### [Producer](https://github.com/Artur-Bertoni/desafio-south-impulsionar/blob/feature/desafio-3-bonus/producer/pom.xml)
+### [Producer](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/main/producer/pom.xml)
 - [Spring Boot](https://spring.io/projects/spring-boot) (org.springframework.boot) -> utilizando os artefatos [spring-boot-starter-amqp](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-amqp), [spring-boot-starter-web](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web) e [spring-boot-starter-test](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test);
 - [Spring AMQP](https://docs.spring.io/spring-amqp/reference/html/) (org.springframework.amqp) -> utilizando o artefato [spring-rabbit-test](https://mvnrepository.com/artifact/org.springframework.amqp/spring-rabbit-test);
 - [Lombok](https://projectlombok.org) (org.projectlombok) -> utilizando o artefato [lombok](https://projectlombok.org/setup/maven);
@@ -68,8 +70,8 @@ mvnw clean package
 - Deve ser adicionado ao docker-compose do projeto
 
 ## Links extras
-- Console para acessar o RabbitMQ Mannagement: http://localhost:15672/#/ (Informações de login presentes no [docker-compose](https://github.com/Artur-Bertoni/desafio-south-impulsionar/blob/feature/desafio-3-bonus/produto-api/docker-compose.yml), no container 'rabbitmq')
-- Endpoints COM [producer](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/feature/desafio-3-bonus/producer):
+- Console para acessar o RabbitMQ Mannagement: http://localhost:15672/#/ (Informações de login presentes no [docker-compose](https://github.com/Artur-Bertoni/desafio-south-impulsionar/blob/main/docker-compose.yml), no container 'rabbitmq')
+- Endpoints COM [producer](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/main/producer):
   - Get All: http://localhost:8081/products
   - Get By Id: http://localhost:8081/products/{{id}}
   - Post: http://localhost:8081/products
@@ -77,7 +79,7 @@ mvnw clean package
   - Update: http://localhost:8081/products/{{id}}
   - Delete: http://localhost:8081/products/{{id}}
   - Patch Quantity: http://localhost:8081/products/{{code}}
-- Endpoint SEM [producer](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/feature/desafio-3-bonus/producer):
+- Endpoint SEM [producer](https://github.com/Artur-Bertoni/desafio-south-impulsionar/tree/main/producer):
   - Get All: http://localhost:8080/products
   - Get By Id: http://localhost:8080/products/{{id}}
   - Post: http://localhost:8080/products
