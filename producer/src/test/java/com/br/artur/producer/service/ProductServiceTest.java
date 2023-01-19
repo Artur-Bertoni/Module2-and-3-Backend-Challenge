@@ -9,28 +9,22 @@ import com.br.artur.producer.entity.Product;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static com.br.artur.producer.service.ProductService.priceCalculator;
-import static org.mockito.ArgumentMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -48,22 +42,51 @@ public class ProductServiceTest {
     @Mock
     private RestTemplateConfig config;
 
+    @Test
+    void getAllTest() {
+        var request = ProductConvert.toEntity(ProductCreator.fakerRequest());
+        var productSavedList = Arrays.asList(request);
+        var productListResponseEntity = ResponseEntity.of(Optional.of(productSavedList));
+
+        Mockito.when(config.getUrl()).thenReturn("http://localhost:8080/products");
+        Mockito.when(restTemplate.exchange(config.getUrl(), HttpMethod.GET, null,
+                new ParameterizedTypeReference<List<Product>>() {})).thenReturn(productListResponseEntity);
+
+        var response = service.getAll();
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(response.get(0).getCode(), request.getCode());
+    }
+
+    @Test
+    void getByIdTest() {
+        var request = ProductCreator.fakerRequest();
+        var productSaved = ProductConvert.toDto(ProductConvert.toEntity(request).withId(1L));
+
+        Mockito.when(config.getUrl())
+                .thenReturn("http://localhost:8080/products");
+        Mockito.when(restTemplate.getForObject(config.getUrl().concat("/{id}"), ProductDto.class, 1L))
+                .thenReturn(productSaved);
+
+        var response = service.getById(1L);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(response.getCode(), request.getCode());
+    }
 
     @Test
     void postTest() throws JsonProcessingException {
         var request = ProductCreator.fakerRequest();
-        var productEntity = ProductConvert.toEntity(request);
+        var productSaved = ProductConvert.toEntity(request);
 
-        var savedProduct = productEntity;
+        productSaved.setQuantity(request.getQuantity() == null ? 0 : request.getQuantity());
+        productSaved.setBarCode(request.getBarCode().concat(String.valueOf(request.getQuantity())));
 
-        savedProduct.setQuantity(request.getQuantity() == null ? 0 : request.getQuantity());
-        savedProduct.setBarCode(request.getBarCode().concat(String.valueOf(request.getQuantity())));
+        productSaved.setGrossAmount(request.getGrossAmount().setScale(2, RoundingMode.HALF_EVEN));
+        productSaved.setTaxes(request.getTaxes().setScale(2, RoundingMode.HALF_EVEN));
+        productSaved.setPrice(priceCalculator(request.getGrossAmount(),request.getTaxes()));
 
-        savedProduct.setGrossAmount(request.getGrossAmount().setScale(2, RoundingMode.HALF_EVEN));
-        savedProduct.setTaxes(request.getTaxes().setScale(2, RoundingMode.HALF_EVEN));
-        savedProduct.setPrice(priceCalculator(request.getGrossAmount(),request.getTaxes()));
-
-        Mockito.doNothing().when(rabbitMqService).sendMessage(RabbitMqConfig.exchangeName,RabbitMqConfig.routingKey,ProductConvert.toDto(savedProduct),"PRODUCT_POST");
+        Mockito.doNothing().when(rabbitMqService).sendMessage(RabbitMqConfig.exchangeName,RabbitMqConfig.routingKey,ProductConvert.toDto(productSaved),"PRODUCT_POST");
         var response = service.post(request);
 
         Assertions.assertNotNull(response);
@@ -71,52 +94,17 @@ public class ProductServiceTest {
     }
 
     @Test
-    void getAllTest() {
-        var response = ProductConvert.toEntity(ProductCreator.fakerRequest());
-        List<Product> list = Arrays.asList(response);
-        ResponseEntity<List<Product>> productList = ResponseEntity.of(Optional.of(list));
-
-        Mockito.when(config.getUrl()).thenReturn("http://localhost:8080/products");
-        Mockito.when(restTemplate.exchange(config.getUrl(), HttpMethod.GET, null,
-                new ParameterizedTypeReference<List<Product>>() {})).thenReturn(productList);
-
-        var result = service.getAll();
-
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals(result.get(0).getCode(), response.getCode());
-    }
-/*
-    @Test
-    void getByIdTest() {
+    void deleteTest() throws JsonProcessingException {
         var request = ProductCreator.fakerRequest();
-        var productSave = ProductConvert.toEntity(request).withId(1L);
+        var productSaved = ProductConvert.toDto(ProductConvert.toEntity(request).withId(1L));
 
-        Mockito.when(repository.findById(1L)).thenReturn(Optional.of(productSave));
-        var response = service.getById(1L);
+        Mockito.when(config.getUrl())
+                .thenReturn("http://localhost:8080/products");
+        Mockito.when(restTemplate.getForObject(config.getUrl().concat("/{id}"), ProductDto.class, 1L))
+                .thenReturn(productSaved);
+        Mockito.doNothing().when(rabbitMqService).sendMessage(RabbitMqConfig.exchangeName,RabbitMqConfig.routingKey,productSaved,"PRODUCT_DELETE");
 
-        Assertions.assertNotNull(response);
-        Assertions.assertEquals(response.getCode(), request.getCode());
-    }
-/*
-    @Test
-    void getByCodeTest() {
-        var request = ProductCreator.fakerRequest();
-        var productSave = ProductConvert.toEntity(request).withId(1L);
-
-        Mockito.when(repository.findByCode("21h437s")).thenReturn(Optional.of(productSave));
-        var response = service.getByCode("21h437s");
-
-        Assertions.assertNotNull(response);
-        Assertions.assertEquals(response.getCode(), request.getCode());
-    }
-
-    @Test
-    void deleteTest() {
-        var request = ProductCreator.fakerRequest();
-        var productSave = ProductConvert.toEntity(request).withId(1L);
-
-        Mockito.when(repository.findById(1L)).thenReturn(Optional.of(productSave));
-        Mockito.doNothing().when(repository).deleteById(1L);
+        service.delete(1L);
         var response = service.getById(1L);
 
         Assertions.assertNotNull(response);
@@ -124,33 +112,39 @@ public class ProductServiceTest {
     }
 
     @Test
-    void updateTest() {
+    void updateTest() throws JsonProcessingException {
         var request = ProductCreator.fakerRequest();
-        var productSave = ProductConvert.toEntity(request).withId(1L);
+        var requestToUpdate = ProductCreator.fakerRequest();
+        var productSaved = ProductConvert.toDto(ProductConvert.toEntity(request).withId(1L));
 
-        Mockito.when(repository.findById(1L)).thenReturn(Optional.of(productSave));
-        Mockito.when(repository.save(productSave)).thenReturn(productSave);
+        Mockito.when(config.getUrl())
+                .thenReturn("http://localhost:8080/products");
+        Mockito.when(restTemplate.getForObject(config.getUrl().concat("/{id}"), ProductDto.class, 1L))
+                .thenReturn(productSaved);
+        Mockito.doNothing()
+                .when(rabbitMqService).sendMessage(RabbitMqConfig.exchangeName,RabbitMqConfig.routingKey,ProductConvert.toDto(ProductConvert.toEntity(requestToUpdate)),"PRODUCT_UPDATE");
 
-        var response = service.update(1L, request);
+        var response = service.update(1L, requestToUpdate);
 
         Assertions.assertNotNull(response);
-        Assertions.assertEquals(response.getCode(), request.getCode());
-        Assertions.assertEquals(response.getName(), request.getName());
-        Assertions.assertEquals(response.getDescription(), request.getDescription());
+        Assertions.assertEquals(requestToUpdate.getName(), response.getName());
     }
-*/
+
     @Test
     void patchQuantityTest() throws JsonProcessingException {
         var request = ProductCreator.fakerRequest();
-        var productSave = ProductConvert.toEntity(request).withId(1L);
+        var productSaved = ProductConvert.toDto(ProductConvert.toEntity(request).withId(1L));
 
-        Mockito.when(config.getUrl()).thenReturn("http://localhost:8080/products");
-        Mockito.when(restTemplate.getForObject(config.getUrl().concat("/code/{code}"), Product.class, productSave.getCode())).thenReturn(productSave);
-        Mockito.doNothing().when(rabbitMqService).sendMessage(RabbitMqConfig.exchangeName,RabbitMqConfig.routingKey,ProductConvert.toDto(productSave),"PRODUCT_CHANGE");
+        Mockito.when(config.getUrl())
+                .thenReturn("http://localhost:8080/products");
+        Mockito.when(restTemplate.getForObject(config.getUrl().concat("/code/{code}"), ProductDto.class, productSaved.getCode()))
+                .thenReturn(productSaved);
+        Mockito.doNothing()
+                .when(rabbitMqService).sendMessage(RabbitMqConfig.exchangeName,RabbitMqConfig.routingKey,productSaved,"PRODUCT_CHANGE");
 
-        var stringResponse = service.patchQuantity(productSave.getCode(), 400);
+        var response = service.patchQuantity(productSaved.getCode(), 400);
 
-        Assertions.assertNotNull(stringResponse);
-        Assertions.assertEquals("Alteração no produto: \n'"+productSave+"'\n Enviada para a fila",stringResponse);
+        Assertions.assertNotNull(request);
+        Assertions.assertEquals(request.getCode(), response.getCode());
     }
 }

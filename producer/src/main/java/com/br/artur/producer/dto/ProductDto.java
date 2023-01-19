@@ -1,8 +1,6 @@
 package com.br.artur.producer.dto;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.With;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -10,6 +8,8 @@ import java.time.Instant;
 @Data
 @Builder
 @With
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProductDto {
 
     private Long id;

@@ -49,14 +49,13 @@ public class ProductService {
 
     public ProductDto getById(Long id){
         try{
-            ResponseEntity<Product> product = restTemplate.exchange(config.getUrl().concat("/").concat(String.valueOf(id)), HttpMethod.GET, null,
-                    new ParameterizedTypeReference<>() {});
+            ProductDto productDto = restTemplate.getForObject(config.getUrl().concat("/{id}"), ProductDto.class, id);
 
-            if (Objects.requireNonNull(product.getBody()).getId() == null){
+            if (productDto == null) {
                 throw new ResourceNotFoundException("Produto não encontrado");
             }
 
-            return ProductConvert.toDto(Objects.requireNonNull(product.getBody()));
+            return productDto;
         } catch (ResourceNotFoundException e){
             throw new ResourceNotFoundException(id);
         }
@@ -95,9 +94,9 @@ public class ProductService {
 
     public void delete(Long id) {
         try {
-            ProductDto productDto = getById(id);
+            ProductDto productDto = restTemplate.getForObject(config.getUrl().concat("/{id}"), ProductDto.class, id);
 
-            if (productDto == null){
+            if (productDto == null) {
                 throw new ResourceNotFoundException("Produto não encontrado");
             }
 
@@ -111,7 +110,7 @@ public class ProductService {
 
     public ProductDto update(Long id, RequestDto request){
         try{
-            ProductDto productDto = getById(id);
+            ProductDto productDto = restTemplate.getForObject(config.getUrl().concat("/{id}"), ProductDto.class, id);
 
             if (productDto == null) {
                 throw new ResourceNotFoundException("Produto não encontrado");
@@ -155,17 +154,17 @@ public class ProductService {
 
     public ProductDto patchQuantity(String code, Integer quantity) {
         try{
-            Product product = restTemplate.getForObject(config.getUrl().concat("/code/{code}"), Product.class, code);
+            ProductDto productDto = restTemplate.getForObject(config.getUrl().concat("/code/{code}"), ProductDto.class, code);
 
-            if (product == null) {
+            if (productDto == null) {
                 throw new ResourceNotFoundException("Produto não encontrado");
             }
 
-            product.setQuantity(quantity);
+            productDto.setQuantity(quantity);
 
-            rabbitMqService.sendMessage(RabbitMqConfig.exchangeName,RabbitMqConfig.routingKey,ProductConvert.toDto(product),"PRODUCT_CHANGE");
+            rabbitMqService.sendMessage(RabbitMqConfig.exchangeName,RabbitMqConfig.routingKey,productDto,"PRODUCT_CHANGE");
 
-            return ProductConvert.toDto(product);
+            return productDto;
         } catch (ResourceNotFoundException e){
             throw new ResourceNotFoundException(code);
         } catch (JsonProcessingException e) {
